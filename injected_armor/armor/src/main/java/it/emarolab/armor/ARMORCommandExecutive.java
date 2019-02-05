@@ -124,6 +124,8 @@ class ARMORCommandExecutive {
         commands.put("LOG_FILE_OFF",             (() -> ARMORCommandUtility.logToFileOff                          (request, response)));
         commands.put("LOG_SCREEN_ON",            (() -> ARMORCommandUtility.logToScreenOn                         (request, response)));
         commands.put("LOG_SCREEN_OFF",           (() -> ARMORCommandUtility.logToScreenOff                        (request, response)));
+        //command for starting sit
+        commands.put("INITSIT__",                  (() -> ARMORCommandUtility.initSit                               (request, response)));
 
         /////////////////       QUERY COMMANDS       /////////////////
 

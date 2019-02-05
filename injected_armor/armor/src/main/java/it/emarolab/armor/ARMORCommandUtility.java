@@ -7,6 +7,7 @@ import it.emarolab.amor.owlInterface.*;
 import org.ros.node.ConnectedNode;
 import java.util.*;
 import static it.emarolab.armor.ARMORCommandsUtils.setResponse;
+import it.emarolab.sit.*;
 
 /**
  * Project: a ROS Multi Ontology Reference - aRMOR <br>
@@ -213,6 +214,30 @@ class ARMORCommandUtility {
         // Stop logging on screen
         Logger.setPrintOnConsole(false);
         setResponse(request.getReferenceName(), true, 0, "", response);
+        return response;
+    }
+
+
+    //create the function executed by command initsit
+    //it starts sit by passing the ontology and for now recalls parts of the original main sit
+    static ArmorDirectiveRes initSit (ArmorDirectiveReq request, ArmorDirectiveRes response) {
+        Set<String> refs = ARMORResourceManager.getOntologiesNames();
+        List<String> refsList = new ArrayList<>();
+        refsList.addAll(refs);
+        //checks if the ontology named "reference" exist
+        //for now the system contains only "reference"
+        if (refsList.contains(request.getReferenceName()))
+        {
+            //start sit
+            Sitinit sit_init=new Sitinit(request.getReferenceName());
+            sit_init.startSit();
+            setResponse(request.getReferenceName(), true, 0, "", response);
+
+        }
+        else {
+            //send error if the ontology doesn't exist
+            setResponse("", false, 201, "ontology reference not exist", response);
+        }
         return response;
     }
 }

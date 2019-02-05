@@ -30,7 +30,7 @@ class ArmorClient(object):
 
     reference_name = None
     client_id = None
-    timeout = 20
+    timeout = 0
 
     manipulation = None
     query = None
@@ -39,7 +39,7 @@ class ArmorClient(object):
     # TODO add support for list of queries
 
     def __init__(self, client_id, reference_name, service_name='/armor_interface_srv',
-                 serial_service_name='/armor_interface_serialized_srv', timeout=25):
+                 serial_service_name='/armor_interface_serialized_srv', timeout=5):
         self.reference_name = reference_name
         self.client_id = client_id
         self.timeout = timeout

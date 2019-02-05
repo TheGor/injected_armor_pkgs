@@ -17,17 +17,17 @@ __status__ = "Development"
 
 # INITIALIZE REFERENCE
 
-path = dirname(realpath(__file__))
-path = path + "/../../test/"
+#path = dirname(realpath(__file__))
+#path = path + "/../../test/"
 
 client = ArmorClient("client", "reference")
-client.utils.load_ref_from_file(path + "test.owl", "http://www.semanticweb.org/emarolab/pyarmor/test",
+client.utils.load_ref_from_file("/home/gor/ProjectJava/src/Work/injected_armor_pkgs/injected_armor/sit/resources/t_box/empty-scene.owl", "http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit",
                                 True, "PELLET", True, False)  # initializing with buffered manipulation and reasoning
 client.utils.mount_on_ref()
 client.utils.set_log_to_terminal(True)
 
 # ADD SOME AXIOMS
-
+'''
 client.manipulation.add_ind_to_class("ind_1", "Class_1")
 print "Added ind_1 to Class_1"
 client.manipulation.add_ind_to_class("ind_2", "Class_2")
@@ -53,6 +53,7 @@ if client.query.check_ind_exists("ind_1"):
 # SAVE AND EXIT
 
 client.utils.save_ref_with_inferences(path + "inferred_test.owl")
+'''
 
 
 
