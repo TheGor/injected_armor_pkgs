@@ -44,6 +44,24 @@ public class ARMORMainService extends AbstractNodeMain {
 
         // TODO this is just a test for sit
         //it.emarolab.sit.Test.main( new String[]{"null","null"});
+	// Callback for ArmorObjects.srv calls
+
+        //server that interacts with the sendObjectclient through ArmorObjects service
+        //it creates linkSit that connects armor to sit, it's a sort of bridge
+        //Linksit set the response for the server
+
+        //for michele: ricevuto is change to staus
+
+	ServiceServer<ArmorObjectsRequest, ArmorObjectsResponse> armorCallbackObject =
+		connectedNode.newServiceServer("send_objects", ArmorObjects._TYPE,
+			(request, response) -> {
+				ARMORLinkSit link = new ARMORLinkSit();
+				Boolean are_objects = link.AreObjects(request.getNameObject(),request.getThing());
+				if(are_objects == true){
+					response.setStatus(are_objects);
+				}
+			});
+
 
         // Callback for ArmorDirective.srv calls (single operation)
 

@@ -124,8 +124,8 @@ class ARMORCommandExecutive {
         commands.put("LOG_FILE_OFF",             (() -> ARMORCommandUtility.logToFileOff                          (request, response)));
         commands.put("LOG_SCREEN_ON",            (() -> ARMORCommandUtility.logToScreenOn                         (request, response)));
         commands.put("LOG_SCREEN_OFF",           (() -> ARMORCommandUtility.logToScreenOff                        (request, response)));
-        //command for starting sit
-        commands.put("INITSIT__",                  (() -> ARMORCommandUtility.initSit                               (request, response)));
+        //AGGIUNTO DA NOI: INVIO ONTOLOGIA EMPTY_SCENE A SIT
+        commands.put("INIT__",			 (() -> ARMORCommandUtility.initSit			  (request, response)));
 
         /////////////////       QUERY COMMANDS       /////////////////
 

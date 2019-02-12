@@ -4,10 +4,15 @@ import injected_armor_msgs.ArmorDirectiveReq;
 import injected_armor_msgs.ArmorDirectiveRes;
 import it.emarolab.amor.owlDebugger.Logger;
 import it.emarolab.amor.owlInterface.*;
+import it.emarolab.amor.owlInterface.OWLReferencesInterface.OWLReferencesContainer;
 import org.ros.node.ConnectedNode;
 import java.util.*;
 import static it.emarolab.armor.ARMORCommandsUtils.setResponse;
-import it.emarolab.sit.*;
+
+
+import it.emarolab.sit.SIT;
+import java.io.File;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Project: a ROS Multi Ontology Reference - aRMOR <br>
@@ -28,7 +33,6 @@ import it.emarolab.sit.*;
 
 
 class ARMORCommandUtility {
-
 
     /////////////////  SYSTEM UTILITIES COMMANDS  /////////////////
 
@@ -217,27 +221,36 @@ class ARMORCommandUtility {
         return response;
     }
 
+    //Methods for sending the ontology to sit
+    //per michele ho cambiato il nome del metodo da sendEmptyScene a initSit
+    static ArmorDirectiveRes initSit(ArmorDirectiveReq request, ArmorDirectiveRes response) {
+	// Send ontology named as empty_scene to SIT, basically it starts sit
+        //some operations with arraylist and set
+        String ontoRef = request.getReferenceName();
+        ArrayList<String> onto_empty = new ArrayList<String>();
+	    Set<String> setA = OWLReferencesContainer.getOWLReferencesKeys();
+        Iterator iterator = setA.iterator();
+        while(iterator.hasNext()){
+		String element = (String) iterator.next();
+		
+		onto_empty.add(element);
+	}
+    //if we find the ontology we pass it to the sit and start the sit
+        //the name of the ontology is a global vairbale of the class sit
 
-    //create the function executed by command initsit
-    //it starts sit by passing the ontology and for now recalls parts of the original main sit
-    static ArmorDirectiveRes initSit (ArmorDirectiveReq request, ArmorDirectiveRes response) {
-        Set<String> refs = ARMORResourceManager.getOntologiesNames();
-        List<String> refsList = new ArrayList<>();
-        refsList.addAll(refs);
-        //checks if the ontology named "reference" exist
-        //for now the system contains only "reference"
-        if (refsList.contains(request.getReferenceName()))
-        {
-            //start sit
-            Sitinit sit_init=new Sitinit(request.getReferenceName());
-            sit_init.startSit();
-            setResponse(request.getReferenceName(), true, 0, "", response);
+	if(onto_empty.contains(ontoRef)){
+		//it.emarolab.sit.Test.main( new String[]{"null","null"});
+		//SIT sit = new SIT(ontoRef);
 
-        }
-        else {
-            //send error if the ontology doesn't exist
-            setResponse("", false, 201, "ontology reference not exist", response);
-        }
-        return response;
+		SIT.s = ontoRef;
+        System.out.println("SIT active");
+		//sit.riconoscimento();
+		
+	}
+	//send response
+	setResponse(true,0,onto_empty,response);
+	return response;
     }
+
+    
 }

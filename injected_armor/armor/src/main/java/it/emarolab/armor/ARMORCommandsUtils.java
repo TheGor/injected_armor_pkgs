@@ -29,6 +29,15 @@ import java.util.Set;
 public class ARMORCommandsUtils {
     ////////////////////  OTHER CLASS METHODS  ////////////////////
 
+    //Setta risposta per l'invio di dell'ontologia empty scene
+    static void setResponse(Boolean success, int exitCode, List<String> messageEmptyScene, ArmorDirectiveRes response){
+	response.setSuccess(success);
+	response.setExitCode(exitCode);
+	response.setErrorDescription("");
+	response.setQueriedObjects(messageEmptyScene);
+	response.setTimeout(false);
+    }
+
     static void setResponse(String referenceName, Boolean success, int exitCode, String errorMessage,
                             ArmorDirectiveRes response){
         response.setSuccess(success);

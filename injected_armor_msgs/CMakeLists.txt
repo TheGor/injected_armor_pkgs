@@ -48,6 +48,11 @@ add_message_files(
   QueryItem.msg
   ArmorDirectiveReq.msg
   ArmorDirectiveRes.msg
+  CenterMSG.msg
+  ListObjects.msg
+  SphereMSG.msg
+  AxisMSG.msg
+  PlaneMSG.msg
 )
 
 # Generate services in the 'srv' folder
@@ -55,6 +60,7 @@ add_service_files(
   FILES
   ArmorDirective.srv
   ArmorDirectiveList.srv
+  ArmorObjects.srv
 )
 
 ## Generate actions in the 'action' folder

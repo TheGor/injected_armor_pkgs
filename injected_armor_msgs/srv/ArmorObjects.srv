@@ -1,0 +1,4 @@
+string[] name_object
+ListObjects thing
+---
+bool status

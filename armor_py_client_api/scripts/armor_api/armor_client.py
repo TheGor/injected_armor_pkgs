@@ -2,8 +2,8 @@
 Python client manager class for Armor --ArmorPy.
 """
 
-from armor_msgs.srv import ArmorDirective, ArmorDirectiveList, ArmorDirectiveListRequest
-from armor_msgs.msg import _ArmorDirectiveReq
+from injected_armor_msgs.srv import ArmorDirective, ArmorDirectiveList, ArmorDirectiveListRequest
+from injected_armor_msgs.msg import _ArmorDirectiveReq
 from armor_manipulation_client import ArmorManipulationClient
 from armor_query_client import ArmorQueryClient
 from armor_utils_client import ArmorUtilsClient
@@ -30,7 +30,7 @@ class ArmorClient(object):
 
     reference_name = None
     client_id = None
-    timeout = 0
+    timeout = 20
 
     manipulation = None
     query = None
@@ -39,7 +39,7 @@ class ArmorClient(object):
     # TODO add support for list of queries
 
     def __init__(self, client_id, reference_name, service_name='/armor_interface_srv',
-                 serial_service_name='/armor_interface_serialized_srv', timeout=5):
+                 serial_service_name='/armor_interface_serialized_srv', timeout=20):
         self.reference_name = reference_name
         self.client_id = client_id
         self.timeout = timeout

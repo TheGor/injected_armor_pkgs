@@ -8,5 +8,7 @@ repositories {
 }
 
 dependencies {
+    compile 'org.ros.rosjava_messages:injected_armor_msgs:2.0.0'
     compile project(':owloop')
+    
 }
