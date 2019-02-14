@@ -29,7 +29,7 @@ public class SIT {
 
 
 
-	public void vision(List<String> list_name,ListObjects list){
+	public void vision(List<String> list_name,List<ListObjects> list){
 		// suppress aMOR log
         	it.emarolab.amor.owlDebugger.Logger.setPrintOnConsole( false);	
 		
@@ -39,15 +39,21 @@ public class SIT {
 			if(list_name.get(i).equals("Sphere")){
 				Sphere s = new Sphere( empty_scene);
 				s.shouldAddTime( true);
-				s.setCenter( (float) list.getSfera().getCentermsg().getXmsg(), (float) list.getSfera().getCentermsg().getYmsg(), (float) list.getSfera().getCentermsg().getZmsg());
-				s.setRadius( (float) list.getSfera().getRadiusmsg());
+				s.setCenter( (float) list.get(i).getSfera().getCentermsg().getXmsg(),
+						(float) list.get(i).getSfera().getCentermsg().getYmsg(),
+						(float) list.get(i).getSfera().getCentermsg().getZmsg());
+				s.setRadius( (float) list.get(i).getSfera().getRadiusmsg());
 				objects.add( s);			
 			} else if(list_name.get(i).equals("Plane")){
 				Plane p = new Plane( empty_scene);
 				p.shouldAddTime( true);
-				p.setAxis( (float) list.getPiano().getAxismsg().getAx(), (float) list.getPiano().getAxismsg().getAy(), (float) list.getPiano().getAxismsg().getAz());
-				p.setCenter( (float) list.getPiano().getCentermsg().getXmsg(), (float) list.getPiano().getCentermsg().getYmsg(), (float) list.getPiano().getCentermsg().getZmsg());
-				p.setHessian((float) list.getPiano().getHessianmsg());
+				p.setAxis( (float) list.get(i).getPiano().getAxismsg().getAx(),
+						(float) list.get(i).getPiano().getAxismsg().getAy(),
+						(float) list.get(i).getPiano().getAxismsg().getAz());
+				p.setCenter( (float) list.get(i).getPiano().getCentermsg().getXmsg(),
+						(float) list.get(i).getPiano().getCentermsg().getYmsg(),
+						(float) list.get(i).getPiano().getCentermsg().getZmsg());
+				p.setHessian((float) list.get(i).getPiano().getHessianmsg());
 				objects.add( p);			
 			}		
 		}

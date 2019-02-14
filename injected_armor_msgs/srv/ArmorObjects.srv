@@ -1,4 +1,4 @@
 string[] name_object
-ListObjects thing
+ListObjects[] thing
 ---
 bool status

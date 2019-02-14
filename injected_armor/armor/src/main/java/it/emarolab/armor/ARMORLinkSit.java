@@ -20,7 +20,7 @@ class ARMORLinkSit {
 	}
 
 
-	public boolean AreObjects(List<String> name,ListObjects r){
+	public boolean AreObjects(List<String> name,List<ListObjects> r){
 
 		//checks if there are objects
 		int cont = 0;
