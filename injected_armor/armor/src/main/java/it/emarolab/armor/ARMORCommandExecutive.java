@@ -140,6 +140,10 @@ class ARMORCommandExecutive {
         commands.put("QUERY_IND_OBJECTPROP",     (() -> ARMORCommandsQuery.queryObjectpropsB2Ind                (request, response, fullIRIName)));
         commands.put("QUERY_SPARQL_",            (() -> ARMORCommandsQuery.querySPARQL                          (request, response, fullIRIName, connectedNode)));
         commands.put("QUERY_SPARQL_FORMATTED",   (() -> ARMORCommandsQuery.querySPARQLFormatted                 (request, response, fullIRIName, connectedNode)));
+        //command for cleaning the ontology
+        commands.put("CLEAN__",                  (() -> ARMORCommandsQuery.cleanOntology                        (request, response, fullIRIName)));
+
+
 
         /////////////////    MANIPULATION COMMANDS    /////////////////
 
