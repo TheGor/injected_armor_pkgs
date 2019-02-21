@@ -1,12 +1,19 @@
 package it.emarolab.sit;
 
+
 import it.emarolab.amor.owlInterface.OWLReferences;
 import it.emarolab.amor.owlInterface.OWLReferencesInterface;
+import it.emarolab.sit.sceneRepresentation.FullSceneRepresentation;
 import it.emarolab.amor.owlInterface.OWLReferencesInterface.OWLReferencesContainer;
-import it.emarolab.sit.owloopDescriptor.SceneClassDescriptor;
+import it.emarolab.sit.owloopDescriptor.*;
 import it.emarolab.sit.realObject.*;
 import it.emarolab.sit.sceneRepresentation.SceneRepresentation;
 import injected_armor_msgs.*;
+import it.emarolab.sit.owloopDescriptor.*;
+import it.emarolab.amor.owlInterface.SemanticRestriction;
+import it.emarolab.owloop.aMORDescriptor.*;
+import org.semanticweb.owlapi.model.*;
+
 
 import java.util.HashSet;
 import java.util.Set;
@@ -77,7 +84,8 @@ public class SIT {
 
 		SpatialSimplifier simplifier = new SpatialSimplifier( objects);
 
-		SceneRepresentation recognition1 = new SceneRepresentation( simplifier, empty_scene);
+		//SceneRepresentation recognition1 = new SceneRepresentation( simplifier, empty_scene);
+        	FullSceneRepresentation recognition1 = new FullSceneRepresentation( simplifier, empty_scene);
 
 		System.out.println( "Recognised with best confidence: " + recognition1.getRecognitionConfidence() + " should learn? " + recognition1.shouldLearn());
 		System.out.println( "Best recognised class: " + recognition1.getBestRecognitionDescriptor());
@@ -97,13 +105,47 @@ public class SIT {
 		System.out.println( "Other recognised classes: " + recognition1.getSceneDescriptor().getTypeIndividual());
 
 		System.out.println("3 ----------------------------------------------");
-		System.out.println("3 ----------------------------------------------");
-		System.out.println("3 ----------------------------------------------");
+
+
+		/*
+        Set<SceneClassDescriptor> recognitionClasses = recognition2.getSceneDescriptor().buildTypeIndividual();
+        for ( SceneClassDescriptor cl1 : recognitionClasses)
+            for ( SceneClassDescriptor cl2 : recognitionClasses)
+                if ( ! cl1.equals( cl2))
+                    System.out.println( " is " + cl1.getInstance().getIRI().getRemainder().get() +
+                            " subclass of " + cl2.getInstance().getIRI().getRemainder().get() +"? " + cl1.getSubConcept().contains( cl2.getInstance()));
+
+		*/
+        System.out.println("6 ----------------------------------------------");
+		System.out.println("Triplets extraction");
+
+		//string ONTO_NAME2= 'ONTO_NEW';
+		//OWLReferences ontoRef2 = OWLReferencesInterface.OWLReferencesContainer.newOWLReferenceFromFileWithPellet(
+					//ONTO_NAME2, ONTO_FILE, ONTO_IRI, bufferinReasoner: true)
+		Set<OWLClass> classes = empty_scene.getSubClassOf( "Scene");
+		for(OWLClass cl : classes)
+		{
+			SceneClassDescriptor classDescriptor = new SceneClassDescriptor(cl, s);
+			classDescriptor.readSemantic();
+
+			Set<SceneClassDescriptor> descriptors = classDescriptor.buildSubConcept();
+			if( descriptors.size() <= 1) {
+				MORAxioms.Restrictions rest = classDescriptor.getDefinitionConcept();
+				for (SemanticRestriction r : rest) {
+					try {
+						SemanticRestriction.ClassRestrictedOnMinObject rp = (SemanticRestriction.ClassRestrictedOnMinObject) r;
+						System.err.println("$$$$" + classDescriptor.getGroundInstance() + " " + rp.getCardinality() + " " + rp.getPropertyName() + " " + rp.getValueName());
+					} catch (ClassCastException e) {
+
+					}
+				}
+			} else {
+				for(SceneClassDescriptor desc : descriptors){
+					System.out.println( "%%%" + desc.getSubConcept() + " is a " + desc.getGround().getGroundInstance());
+				}
+			}
+		}
+
 
 	}
-
-
-	
-
-
 }
