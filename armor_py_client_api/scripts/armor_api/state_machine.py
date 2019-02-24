@@ -9,6 +9,8 @@ import injected_armor_msgs.msg
 from injected_armor_msgs.msg import SphereMSG,PlaneMSG,ListObjects
 from os.path import dirname, realpath
 import random
+from std_msgs.msg import Int16
+import time
 
 path = dirname(realpath(__file__))
 path = path + "/../../test/empty-scene.owl"
@@ -17,17 +19,36 @@ path = path + "/../../test/empty-scene.owl"
 
 class Look(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['outcome1','outcome2','outcome3'], input_keys=['flag'])
+        smach.State.__init__(self, outcomes=['outcome1','outcome2','outcome3','failed'])
+	#if we received 1 we get scene1, if 2 we get scene2 and if 3 we get scene3	
+	self.one_received = False
+	self.two_received = False
+	self.three_received = False
+	#call the subscriber
+	#This declares that your node subscribes to the chatter topic which is of type Int64. When new messages are received, 		      		#callback is invoked with the message as the first argument.
+        self.subscriber = rospy.Subscriber('chatter', Int16, self.callback)
+
+    def callback(self, data):
+  	if data.data == 1:
+            self.one_received = True
+        elif data.data == 2:
+            self.two_received = True
+        elif data.data == 3:
+            self.three_received = True
+       
 
     def execute(self,userdata):
 	rospy.loginfo('Executing state Scene')
-	rospy.loginfo('flag = %f'%userdata.flag)
-	if userdata.flag == 1:
+	#rospy.loginfo('flag = %f'%data.data)
+	time.sleep(10)
+	if self.one_received:
 		return 'outcome1'
-	elif userdata.flag == 2:
+	elif self.two_received:
 		return 'outcome2'
-	elif userdata.flag == 3:
+	elif self.three_received:
 		return 'outcome3'
+	else:
+		return 'failed'
 
 	
 
@@ -36,7 +57,6 @@ def main():
 
 	# Create a SMACH state machine
 	sm = smach.StateMachine(outcomes=['succeeded','preempted','aborted'])	
-	sm.userdata.switch_var = random.randint(1,3)
 	
 	with sm:
 		#define function for loading an ontology, with armorDirectiveSrv
@@ -72,8 +92,8 @@ def main():
 		#create state scene as a switch
 		smach.StateMachine.add('LOOK',Look(),transitions={'outcome1':'LOOK_SCENE1',
 								    'outcome2':'LOOK_SCENE2',
-								     'outcome3':'LOOK_SCENE3'},
-							remapping={'flag':'switch_var'}) 
+								     'outcome3':'LOOK_SCENE3',
+									'failed': 'aborted'}) 
 
 
 		#define function for passing object data
