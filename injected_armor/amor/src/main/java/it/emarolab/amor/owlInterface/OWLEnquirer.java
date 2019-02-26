@@ -1,23 +1,25 @@
 package it.emarolab.amor.owlInterface;
 
-import com.clarkparsia.pellet.owlapi.PelletReasoner;
-import com.clarkparsia.pellet.sparqldl.jena.SparqlDLExecutionFactory;
+
 import it.emarolab.amor.owlDebugger.Logger;
 import it.emarolab.amor.owlDebugger.Logger.LoggerFlag;
 import it.emarolab.amor.owlInterface.SemanticRestriction.*;
 import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.InfModel;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.mindswap.pellet.KnowledgeBase;
-import org.mindswap.pellet.jena.PelletInfGraph;
+import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.search.EntitySearcher;
 
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 
 
 // TODO : make an abstract class interface to be implemented for all methods (all have the same shape)
@@ -704,7 +706,7 @@ public class OWLEnquirer {
     }
     /**
      * Returns all sub-classes of a given class (except for {@link OWLDataFactory#getOWLThing()}).
-         * Results completeness is ensured only if {@link #returnsCompleteDescription} is set to {@code true}.
+     * Results completeness is ensured only if {@link #returnsCompleteDescription} is set to {@code true}.
      *
      * @param cl an OWL class.
      * @return non-ordered set of sub-classes.
@@ -737,7 +739,7 @@ public class OWLEnquirer {
 
     /**
      * Returns all super-classes of a given class.
-         * Results completeness is ensured only if {@link #returnsCompleteDescription} is set to {@code true}.
+     * Results completeness is ensured only if {@link #returnsCompleteDescription} is set to {@code true}.
      *
      * @param className name of an OWL class.
      * @return non-ordered set of sub-classes.
@@ -1227,10 +1229,10 @@ public class OWLEnquirer {
         //Set<OWLClassExpression> set = stream.collect( Collectors.toSet());
 
         //if( set != null)
-            stream.forEach( (c) -> {
-                if (c.isOWLClass())
-                    classes.add(c.asOWLClass());
-            });
+        stream.forEach( (c) -> {
+            if (c.isOWLClass())
+                classes.add(c.asOWLClass());
+        });
         //classes.addAll(set.stream().map(AsOWLClass::asOWLClass).collect(Collectors.toList()));
 
         if( isIncludingInferences()) {
@@ -1449,9 +1451,19 @@ public class OWLEnquirer {
      * @param timeOut timeout for the query.
      * @return list of solutions.
      */
+
+    /**
+     * Performs a SPARQL query on the ontology. Returns a list of {@link QuerySolution} or {@code null} if the query fails.
+     * Works only with the Pellet reasoner. {@code timeOut} parameter sets the query timeout, no timeout is set if
+     * {@code timeOut &lt;=0}. Once timeout is reached, all solutions found up to that point are returned.
+     *
+     * @param query   a string defining the query in SPARQL query syntax.
+     * @param timeOut timeout for the query.
+     * @return list of solutions.
+     */
     public List<QuerySolution> sparql(String query, Long timeOut) {
         try {
-            // get objects
+            /*// get objects
             KnowledgeBase kb = ((PelletReasoner) ontoRef.getOWLReasoner()).getKB();
             PelletInfGraph graph = new org.mindswap.pellet.jena.PelletReasoner().bind(kb);
             InfModel model = ModelFactory.createInfModel(graph);
@@ -1472,10 +1484,54 @@ public class OWLEnquirer {
                 solutions.add(r);
             }
             logger.addDebugString("SPARQL query:" + System.getProperty("line.separator") + queryLog + System.getProperty("line.separator") + ResultSetFormatter.asText(result));
+            return solutions;*/
+
+            List<QuerySolution> solutions = new ArrayList<>();
+            try {
+                try (QueryExecution qexec = QueryExecutionFactory.create(QueryFactory.create(query), getModel( ontoRef.getOWLOntology()))) {
+                    String queryLog = qexec.getQuery() + System.getProperty("line.separator") + "[TimeOut:";
+
+                    if (timeOut != null) { // apply time out
+                        if (timeOut > 0) {
+                            qexec.setTimeout(timeOut); // TODO: it does not seems to work with pellet SELECT queries
+                            queryLog += timeOut + "ms].";
+                        } else queryLog += "NONE].";
+                    } else queryLog += "NONE].";
+
+                    ResultSet res = qexec.execSelect();
+                    while (res.hasNext()) {
+                        QuerySolution r = res.next();
+                        solutions.add(r);
+                        //System.out.println( "£££ "+ r);
+                    }
+                    System.out.println("SPARQL query:" + System.getProperty("line.separator") + queryLog + System.getProperty("line.separator") + solutions);//ResultSetFormatter.asText(res));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
             return solutions;
         } catch (QueryCancelledException e) {
             logger.addDebugString("SPARQL timed out !!");
             return null;
+        }
+    }
+    public Model getModel(final OWLOntology ontology) {
+        Model model = ModelFactory.createDefaultModel();
+
+        try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is)) {
+            new Thread(() -> {
+                try {
+                    ontology.getOWLOntologyManager().saveOntology(ontology, new TurtleDocumentFormat(), os);
+                    os.close();
+                } catch (OWLOntologyStorageException | IOException e) {
+                    e.printStackTrace();
+                }
+            }).start(); // blocking runnable
+            model.read(is, null, "TURTLE");
+            return model;
+        } catch (Exception e) {
+            throw new RuntimeException("Could not convert OWL API ontology to JENA API model.", e);
         }
     }
     /**
