@@ -19,7 +19,7 @@ path = path + "/../../test/empty-scene.owl"
 
 class Look(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['outcome1','outcome2','outcome3','failed'])
+        smach.State.__init__(self, outcomes=['succeeded','failed'],output_keys=['look_case_in'])
 	#if we received 1 we get scene1, if 2 we get scene2 and if 3 we get scene3	
 	self.one_received = False
 	self.two_received = False
@@ -40,16 +40,16 @@ class Look(smach.State):
     def execute(self,userdata):
 	rospy.loginfo('Executing state Scene')
 	#rospy.loginfo('flag = %f'%data.data)
-	time.sleep(10)
+	time.sleep(30)
 	if self.one_received:
-		return 'outcome1'
+		userdata.look_case_in=1
 	elif self.two_received:
-		return 'outcome2'
+		userdata.look_case_in=2
 	elif self.three_received:
-		return 'outcome3'
+		userdata.look_case_in=3
 	else:
 		return 'failed'
-
+	return 'succeeded'
 	
 
 def main():
@@ -57,6 +57,7 @@ def main():
 
 	# Create a SMACH state machine
 	sm = smach.StateMachine(outcomes=['succeeded','preempted','aborted'])	
+	sm.userdata.sm_case=0
 	
 	with sm:
 		#define function for loading an ontology, with armorDirectiveSrv
@@ -90,119 +91,109 @@ def main():
 
 
 		#create state scene as a switch
-		smach.StateMachine.add('LOOK',Look(),transitions={'outcome1':'LOOK_SCENE1',
-								    'outcome2':'LOOK_SCENE2',
-								     'outcome3':'LOOK_SCENE3',
-									'failed': 'aborted'}) 
+		smach.StateMachine.add('LOOK',Look(),transitions={'succeeded':'LOOK_SCENE',
+									'failed': 'aborted'},remapping={'look_case_in':'sm_case'}) 
 
 
 		#define function for passing object data
-		def sceneone_request_cb(userdata,request):
-			objects1= ListObjects()
-			objects2= ListObjects()
-			object1 = SphereMSG()
-			object2 = PlaneMSG()
-			sceneone_request = ArmorObjectsRequest()
-			#Definition Sphere
-			object1.radiusmsg = 0.1
-			object1.centermsg.xmsg = 0.3
-			object1.centermsg.ymsg = 0.3
-			object1.centermsg.zmsg = 0.3
-			#Definition Plane
-			object2.hessianmsg = 0.6
-			object2.centermsg.xmsg = 0.6
-			object2.centermsg.ymsg = 0.6
-			object2.centermsg.zmsg = 0.6
-			object2.axismsg.ax = 0.5
-			object2.axismsg.ay = 0.5
-			object2.axismsg.az = 0.5
-			objects1.sfera = object1
-			objects2.piano = object2
+		def scene_request_cb(userdata,request):
+			scene_request = ArmorObjectsRequest()
+			if sm.userdata.sm_case==1:
+				#scene 1 definition
+				objects1= ListObjects()
+				objects2= ListObjects()
+				object1 = SphereMSG()
+				object2 = PlaneMSG()
+				#Definition Sphere
+				object1.radiusmsg = 0.1
+				object1.centermsg.xmsg = 0.3
+				object1.centermsg.ymsg = 0.3
+				object1.centermsg.zmsg = 0.3
+				#Definition Plane
+				object2.hessianmsg = 0.6
+				object2.centermsg.xmsg = 0.6
+				object2.centermsg.ymsg = 0.6
+				object2.centermsg.zmsg = 0.6
+				object2.axismsg.ax = 0.5
+				object2.axismsg.ay = 0.5
+				object2.axismsg.az = 0.5
+				objects1.sfera = object1
+				objects2.piano = object2
 				
-			#Definition Request
-			sceneone_request.thing = [objects1,objects2]
-			sceneone_request.name_object = ["Sphere","Plane"]
+				#Definition Request
+				scene_request.thing = [objects1,objects2]
+				scene_request.name_object = ["Sphere","Plane"]
 			
-			return sceneone_request
-		
-		#define scene1 (plane,sphere) state
-		smach.StateMachine.add('LOOK_SCENE1',smach_ros.ServiceState('send_objects',ArmorObjects,request_cb = 									sceneone_request_cb))
+			
+			elif sm.userdata.sm_case==2:
+				#scene 2 definition
+				objects1= ListObjects()
+				objects2= ListObjects()
+				object1 = SphereMSG()
+				object2 = SphereMSG()
+				#Definition Sphere
+				object1.radiusmsg = 0.1
+				object1.centermsg.xmsg = 0.3
+				object1.centermsg.ymsg = 0.3
+				object1.centermsg.zmsg = 0.3
+				#Definition Plane
+				object2.radiusmsg = 5.0
+				object2.centermsg.xmsg = 3.0
+				object2.centermsg.ymsg = 3.0
+				object2.centermsg.zmsg = 3.0
 
-
-	#definition scene 2
-	#define function for passing object data
-		def scenetwo_request_cb(userdata,request):
-			objects1= ListObjects()
-			objects2= ListObjects()
-			object1 = SphereMSG()
-			object2 = SphereMSG()
-			scenetwo_request = ArmorObjectsRequest()
-			#Definition Sphere
-			object1.radiusmsg = 0.1
-			object1.centermsg.xmsg = 0.3
-			object1.centermsg.ymsg = 0.3
-			object1.centermsg.zmsg = 0.3
-			#Definition Plane
-			object2.radiusmsg = 5.0
-			object2.centermsg.xmsg = 3.0
-			object2.centermsg.ymsg = 3.0
-			object2.centermsg.zmsg = 3.0
-
-			objects1.sfera = object1
-			objects2.sfera = object2
+				objects1.sfera = object1
+				objects2.sfera = object2
 				
-			#Definition Request
-			scenetwo_request.thing = [objects1,objects2]
-			scenetwo_request.name_object = ["Sphere","Sphere"]
+				#Definition Request
+				scene_request.thing = [objects1,objects2]
+				scene_request.name_object = ["Sphere","Sphere"]
 			
-			return scenetwo_request
-		
-		#define scene2 state (sphere,sphere)
-		smach.StateMachine.add('LOOK_SCENE2',smach_ros.ServiceState('send_objects',ArmorObjects,request_cb = 									scenetwo_request_cb))
+			
+			elif sm.userdata.sm_case==3:
+				#scene 3 definition
+				objects1= ListObjects()
+				objects2= ListObjects()
+				objects3= ListObjects()
+				object1 = SphereMSG()
+				object2 = SphereMSG()
+				object3 = PlaneMSG()
+				scenethree_request = ArmorObjectsRequest()
+				#Definition Sphere
+				object1.radiusmsg = 0.1
+				object1.centermsg.xmsg = 0.3
+				object1.centermsg.ymsg = 0.3
+				object1.centermsg.zmsg = 0.3
+				#Definition Plane
+				object2.radiusmsg = 5.0
+				object2.centermsg.xmsg = 3.0
+				object2.centermsg.ymsg = 3.0
+				object2.centermsg.zmsg = 3.0
+				#Definition Plane
+				object3.hessianmsg = 0.6
+				object3.centermsg.xmsg = 0.6
+				object3.centermsg.ymsg = 0.6
+				object3.centermsg.zmsg = 0.6
+				object3.axismsg.ax = 0.5
+				object3.axismsg.ay = 0.5
+				object3.axismsg.az = 0.5
 
-
-	#definition scene 2
-	#define function for passing object data
-		def scenethree_request_cb(userdata,request):
-			objects1= ListObjects()
-			objects2= ListObjects()
-			objects3= ListObjects()
-			object1 = SphereMSG()
-			object2 = SphereMSG()
-			object3 = PlaneMSG()
-			scenethree_request = ArmorObjectsRequest()
-			#Definition Sphere
-			object1.radiusmsg = 0.1
-			object1.centermsg.xmsg = 0.3
-			object1.centermsg.ymsg = 0.3
-			object1.centermsg.zmsg = 0.3
-			#Definition Plane
-			object2.radiusmsg = 5.0
-			object2.centermsg.xmsg = 3.0
-			object2.centermsg.ymsg = 3.0
-			object2.centermsg.zmsg = 3.0
-			#Definition Plane
-			object3.hessianmsg = 0.6
-			object3.centermsg.xmsg = 0.6
-			object3.centermsg.ymsg = 0.6
-			object3.centermsg.zmsg = 0.6
-			object3.axismsg.ax = 0.5
-			object3.axismsg.ay = 0.5
-			object3.axismsg.az = 0.5
-
-			objects1.sfera = object1
-			objects2.sfera = object2
-			objects3.piano = object3
+				objects1.sfera = object1
+				objects2.sfera = object2
+				objects3.piano = object3
 				
-			#Definition Request
-			scenethree_request.thing = [objects1,objects2,objects3]
-			scenethree_request.name_object = ["Sphere","Sphere","Plane"]
+				#Definition Request
+				scene_request.thing = [objects1,objects2,objects3]
+				scene_request.name_object = ["Sphere","Sphere","Plane"]
 			
-			return scenethree_request
+			return scene_request
+			
+	
+				
 		
-		#define scene3 state (plane,sphere,sphere)
-		smach.StateMachine.add('LOOK_SCENE3',smach_ros.ServiceState('send_objects',ArmorObjects,request_cb = 									scenethree_request_cb))
-
+		
+		#define scene state
+		smach.StateMachine.add('LOOK_SCENE',smach_ros.ServiceState('send_objects',ArmorObjects,request_cb = 									scene_request_cb),transitions={'succeeded':'succeeded'})
 
 
 	#result = sm.execute()
