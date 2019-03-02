@@ -4,7 +4,7 @@ import rospy
 import smach
 import smach_ros
 import injected_armor_msgs.srv
-from injected_armor_msgs.srv import ArmorDirective,ArmorDirectiveRequest,ArmorObjects,ArmorObjectsRequest
+from injected_armor_msgs.srv import ArmorDirective,ArmorDirectiveRequest,ArmorObjects,ArmorObjectsRequest,ArmorDirectiveResponse
 import injected_armor_msgs.msg
 from injected_armor_msgs.msg import SphereMSG,PlaneMSG,ListObjects
 from os.path import dirname, realpath
@@ -25,7 +25,7 @@ class Look(smach.State):
 	self.two_received = False
 	self.three_received = False
 	#call the subscriber
-	#This declares that your node subscribes to the chatter topic which is of type Int64. When new messages are received, 		      		#callback is invoked with the message as the first argument.
+	#This declares that your node subscribes to the chatter topic which is of type Int16. When new messages are received, 		      		#callback is invoked with the message as the first argument.
         self.subscriber = rospy.Subscriber('chatter', Int16, self.callback)
 
     def callback(self, data):
@@ -40,7 +40,7 @@ class Look(smach.State):
     def execute(self,userdata):
 	rospy.loginfo('Executing state Scene')
 	#rospy.loginfo('flag = %f'%data.data)
-	time.sleep(30)
+	time.sleep(15)
 	if self.one_received:
 		userdata.look_case_in=1
 	elif self.two_received:
@@ -51,6 +51,85 @@ class Look(smach.State):
 		return 'failed'
 	return 'succeeded'
 	
+class Listen(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['ready','not_ready'])
+
+    def execute(self,userdata):
+	rospy.loginfo('Executing state Listen')
+	self.answer=raw_input("Do you want to ask something to Me?\n")
+	if self.answer == 'yes':
+		return 'ready'
+	else:
+		return 'not_ready'
+
+
+class Processing_response(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded'], input_keys=['processing_response_input'])
+#here we processing the reuslt of the sparql_query
+    def execute(self,userdata):
+	rospy.loginfo('Executing state ')
+	rospy.loginfo('now u got: %s'%userdata.processing_response_input)
+	#save the response in a tmp variable
+	tmp=userdata.processing_response_input
+	#string manipulation
+	for x in tmp:
+		rospy.loginfo('x iniziale %s ',x)
+		x=x.replace("p=http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit#","")
+		x=x.replace("cls=http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit#","")
+		x=x.replace("{","")
+		x=x.replace("}","")
+		#x=x.replace(",","")
+		rospy.loginfo('x finale %s ',x)
+	#assign manipulated string to a new list
+	tmp1=[]
+	tmp1.append(x)
+	rospy.loginfo('lista_finale %s ',tmp1)
+	#split tmp1 in different senteces ----> ['PlaneisAboveOf','Sphere',.....] 
+	#i have 6 string in the variable sentences
+	sentences=tmp1[0].split(',')
+	rospy.loginfo('la mia frase %s ', sentences)
+	#more working, trying to separate Plane/is/Above/Of
+	for k in range(len(sentences)):
+		if k % 2==0:
+			if('Plane' in sentences[k]):
+				sentences[k]=sentences[k].replace('Plane','Plane ')
+				if('Behind' in sentences[k]):
+					sentences[k]=sentences[k].replace('Behind',' Behind ')
+				elif('Above' in sentences[k]):
+					sentences[k]=sentences[k].replace('Above',' Above ')
+				elif('Right' in sentences[k]):
+					sentences[k]=sentences[k].replace('Right',' Right ')
+				elif('Left' in sentences[k]):
+					sentences[k]=sentences[k].replace('Left',' Left ')
+				elif('InFront' in sentences[k]):
+					sentences[k]=sentences[k].replace('InFront',' In Front ')
+			elif('Sphere' in sentences[k]):
+				sentences[k]=sentences[k].replace('Sphere','Sphere ')
+				if('Behind' in sentences[k]):
+					sentences[k]=sentences[k].replace('Behind',' Behind ')
+				elif('Above' in sentences[k]):
+					sentences[k]=sentences[k].replace('Above',' Above ')
+				elif('Right' in sentences[k]):
+					sentences[k]=sentences[k].replace('Right',' Right ')
+				elif('Left' in sentences[k]):
+					sentences[k]=sentences[k].replace('Left',' Left ')
+				elif('InFront' in sentences[k]):
+					sentences[k]=sentences[k].replace('InFront',' In Front ')
+	rospy.loginfo('la mia frase diventa %s ', sentences)		
+	#try to build the final sentence
+	final_sentences=[]
+	j=0
+	for i in range(len(sentences)/2):
+		s=sentences[j]+" "+sentences[j+1]
+		final_sentences.append(s)
+		j=j+2
+	for z in final_sentences:
+		rospy.loginfo('%s', z)
+	return 'succeeded' 
+	
+
 
 def main():
 	rospy.init_node('state_machine_robot')
@@ -58,6 +137,7 @@ def main():
 	# Create a SMACH state machine
 	sm = smach.StateMachine(outcomes=['succeeded','preempted','aborted'])	
 	sm.userdata.sm_case=0
+	sm.userdata.output=""
 	
 	with sm:
 		#define function for loading an ontology, with armorDirectiveSrv
@@ -68,6 +148,7 @@ def main():
 			set_ontology_request.armor_request.command = "LOAD"
 			set_ontology_request.armor_request.primary_command_spec = "FILE"
 			set_ontology_request.armor_request.secondary_command_spec = ""
+			#pay attention to the true parameter for adding new individuals
 			set_ontology_request.armor_request.args = [path,"http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit",str(True),"PELLET",str(False)]
 
 			return set_ontology_request
@@ -193,7 +274,55 @@ def main():
 		
 		
 		#define scene state
-		smach.StateMachine.add('LOOK_SCENE',smach_ros.ServiceState('send_objects',ArmorObjects,request_cb = 									scene_request_cb),transitions={'succeeded':'succeeded'})
+		smach.StateMachine.add('LOOK_SCENE',smach_ros.ServiceState('send_objects',ArmorObjects,request_cb = 									scene_request_cb),transitions={'succeeded':'LISTEN'})
+
+		#define state listen
+		smach.StateMachine.add('LISTEN',Listen(),transitions={'ready':'QUERY', 'not_ready':'aborted'})
+
+
+		#define function for querying a robot
+		def query_request_cb(userdata,request):
+			#query_request = ArmorDirectiveRequest()
+			query_string='PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX owl: <http://www.w3.org/2002/07/owl#> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX sit: <http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit#> SELECT ?p ?cls WHERE { sit:TestScene (owl:equivalentClass|(owl:intersectionOf/rdf:rest*/rdf:first))* ?restriction . ?restriction owl:minQualifiedCardinality ?min . '
+			query_name=raw_input('prototipo di domanda\n')
+			#first type of question
+			if(query_name=='scene'):
+				request.armor_request.client_name = "client"
+				request.armor_request.reference_name = "reference"
+				request.armor_request.command = "QUERY"
+				request.armor_request.primary_command_spec="SPARQL"
+				request.armor_request.secondary_command_spec=""
+				request.armor_request.args=[query_string+' ?restriction owl:onClass ?cls . ?restriction owl:onProperty ?p . }']
+				return request
+			#second type of question
+			if(query_name=='sphere' or query_name=='plane'):
+				request.armor_request.client_name = "client"
+				request.armor_request.reference_name = "reference"
+				request.armor_request.command = "QUERY"
+				request.armor_request.primary_command_spec="SPARQL"
+				request.armor_request.secondary_command_spec=""
+				request.armor_request.args=[query_string+' {?restriction owl:onProperty ?p . FILTER(regex(str(?p),\"'+query_name+'\",\"i\"))} UNION {  ?restriction owl:onClass ?cls . FILTER (regex(str(?cls),\"'+query_name+'\",\"i\"))}}']
+				rospy.loginfo('%s',request.armor_request.args)
+				return request
+		#define function query result processing
+		def query_response_cb(userdata,response):
+			#query_response = ArmorDirectiveResponse()
+			rospy.loginfo('%s', response.armor_response.queried_objects)
+			userdata.query_output=response.armor_response.queried_objects
+			return 'succeeded';
+
+
+		smach.StateMachine.add('QUERY',smach_ros.ServiceState('armor_interface_srv',ArmorDirective,request_cb = 									query_request_cb,response_cb=query_response_cb,output_keys=['query_output']),transitions={'succeeded':'succeeded'},remapping={'query_output':'output'})
+
+		#define Processing_response state
+
+		
+		smach.StateMachine.add('PROCESSING_RESPONSE',Processing_response(),transitions={'succeeded':'succeeded'},remapping={'processing_response_input':'output'})
+
+		
+
+
+	
 
 
 	#result = sm.execute()
