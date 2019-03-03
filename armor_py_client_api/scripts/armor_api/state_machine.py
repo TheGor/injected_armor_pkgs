@@ -64,15 +64,35 @@ class Listen(smach.State):
 		return 'not_ready'
 
 
-class Processing_response(smach.State):
+#definine a general state which evaluates the keyowrd in input and choose the right processing_respoonse
+class Processing_response_general(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded'], input_keys=['processing_response_input'])
+        smach.State.__init__(self, outcomes=['processing_1','processing_2'],input_keys=['processing_response_general_input_1','processing_response_general_input_2'])
+
+    def execute(self,userdata):
+	rospy.loginfo('Executing state Processing Response General')
+	rospy.loginfo(userdata.processing_response_general_input_2)
+	if userdata.processing_response_general_input_2 == 'scene':
+		rospy.loginfo('michele maiale')
+		return 'processing_1'
+	elif (userdata.processing_response_general_input_2 == 'plane' or userdata.processing_response_general_input_2 == 'sphere'):
+		return 'processing_2'
+	#elif userdata.processing_response_general_input_1 == 'michele':
+	#	return 'processing_3'
+
+
+#defining processing_response for the keyword 'scene'
+class Processing_response_1(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['got_it'], input_keys=['processing_response_input_1','processing_response_input_2'])
 #here we processing the reuslt of the sparql_query
     def execute(self,userdata):
 	rospy.loginfo('Executing state ')
-	rospy.loginfo('now u got: %s'%userdata.processing_response_input)
+	rospy.loginfo('now u got: %s'%userdata.processing_response_input_1)
+        rospy.loginfo('name: %s'%userdata.processing_response_input_2)
+        
 	#save the response in a tmp variable
-	tmp=userdata.processing_response_input
+	tmp=userdata.processing_response_input_1
 	#string manipulation
 	for x in tmp:
 		rospy.loginfo('x iniziale %s ',x)
@@ -127,7 +147,37 @@ class Processing_response(smach.State):
 		j=j+2
 	for z in final_sentences:
 		rospy.loginfo('%s', z)
-	return 'succeeded' 
+	return 'got_it' 
+
+#defining processing_response for the keyword 'plane' or 'sphere'
+class Processing_response_2(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['got_it'], input_keys=['processing_response_input_1','processing_response_input_2'])
+#here we processing the reuslt of the sparql_query
+    def execute(self,userdata):
+	rospy.loginfo('now u got: %s'%userdata.processing_response_input_1)
+        rospy.loginfo('name: %s'%userdata.processing_response_input_2)
+        
+	#save the response in a tmp variable
+	tmp=userdata.processing_response_input_1
+	#string manipulation
+	for x in tmp:
+		rospy.loginfo('x iniziale %s ',x)
+		x=x.replace("p=http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit#","")
+		x=x.replace("cls=http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit#","")
+		x=x.replace("{","")
+		x=x.replace("}","")
+		x=x.replace("isBehindOf","")
+		x=x.replace("isRightOf","")
+		x=x.replace("isLeftOf","")
+		x=x.replace("isInFrontOf","")
+		x=x.replace("isAboveOf","")
+		rospy.loginfo('x finale %s ',x)
+	tmp1=[]
+	tmp1.append(x)
+	rospy.loginfo('frase_finale : %s ','I see a '+tmp1[0])
+	return 'got_it'
+
 	
 
 
@@ -138,6 +188,7 @@ def main():
 	sm = smach.StateMachine(outcomes=['succeeded','preempted','aborted'])	
 	sm.userdata.sm_case=0
 	sm.userdata.output=""
+	sm.userdata.keyword=""
 	
 	with sm:
 		#define function for loading an ontology, with armorDirectiveSrv
@@ -286,6 +337,9 @@ def main():
 			query_string='PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX owl: <http://www.w3.org/2002/07/owl#> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX sit: <http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit#> SELECT ?p ?cls WHERE { sit:TestScene (owl:equivalentClass|(owl:intersectionOf/rdf:rest*/rdf:first))* ?restriction . ?restriction owl:minQualifiedCardinality ?min . '
 			query_name=raw_input('prototipo di domanda\n')
 			#first type of question
+			rospy.loginfo(type(query_name))
+			userdata.query_output_1=query_name
+			rospy.loginfo('%s',sm.userdata.keyword)
 			if(query_name=='scene'):
 				request.armor_request.client_name = "client"
 				request.armor_request.reference_name = "reference"
@@ -301,23 +355,40 @@ def main():
 				request.armor_request.command = "QUERY"
 				request.armor_request.primary_command_spec="SPARQL"
 				request.armor_request.secondary_command_spec=""
-				request.armor_request.args=[query_string+' {?restriction owl:onProperty ?p . FILTER(regex(str(?p),\"'+query_name+'\",\"i\"))} UNION {  ?restriction owl:onClass ?cls . FILTER (regex(str(?cls),\"'+query_name+'\",\"i\"))}}']
+				request.armor_request.args=[query_string+' {?restriction owl:onProperty ?p . FILTER(regex(str(?p),\"'+query_name+'\",\"i\"))} UNION {  ?restriction owl:onClass ?cls . FILTER (regex(str(?cls),\"'+query_name+'\",\"i\"))}}  LIMIT 1']
 				rospy.loginfo('%s',request.armor_request.args)
 				return request
 		#define function query result processing
 		def query_response_cb(userdata,response):
 			#query_response = ArmorDirectiveResponse()
 			rospy.loginfo('%s', response.armor_response.queried_objects)
+			#rospy.loginfo('%s', sm.userdata.keyword)
 			userdata.query_output=response.armor_response.queried_objects
 			return 'succeeded';
 
+		#adding state for query
+		smach.StateMachine.add('QUERY',smach_ros.ServiceState('armor_interface_srv',ArmorDirective,request_cb = 									query_request_cb,response_cb=query_response_cb,output_keys=['query_output','query_output_1']),transitions={'succeeded':'PROCESSING_RESPONSE'},remapping={'query_output':'output','query_output_1':'keyword'})
 
-		smach.StateMachine.add('QUERY',smach_ros.ServiceState('armor_interface_srv',ArmorDirective,request_cb = 									query_request_cb,response_cb=query_response_cb,output_keys=['query_output']),transitions={'succeeded':'succeeded'},remapping={'query_output':'output'})
-
-		#define Processing_response state
-
+		#create a substate machine which contains the processing of the response
 		
-		smach.StateMachine.add('PROCESSING_RESPONSE',Processing_response(),transitions={'succeeded':'succeeded'},remapping={'processing_response_input':'output'})
+        	sm1 = smach.StateMachine(outcomes=['done'],input_keys=['output','keyword'])
+		#sm1.userdata.output_submachine = ''
+		#define Processing_response state
+		with sm1:
+			#adding state processing general
+			smach.StateMachine.add('PROCESSING_RESPONSE_GENERAL',Processing_response_general(),transitions={'processing_1':'PROCESSING_RESPONSE_1','processing_2':'PROCESSING_RESPONSE_2'},remapping={'processing_response_general_input_1':'output','processing_response_general_input_2':'keyword'})
+				
+			
+			#adding state processing_repsonse_1 which process response for keyword scene
+			smach.StateMachine.add('PROCESSING_RESPONSE_1',Processing_response_1(),transitions={'got_it':'done'},remapping={'processing_response_input_1':'output','processing_response_input_2':'keyword'})
+
+			#adding state processing_repsonse_2 which process response for keyword scene
+			smach.StateMachine.add('PROCESSING_RESPONSE_2',Processing_response_2(),transitions={'got_it':'done'},remapping={'processing_response_input_1':'output','processing_response_input_2':'keyword'})
+		
+		#first state of the submachine		
+		smach.StateMachine.add('PROCESSING_RESPONSE',sm1, transitions={'done':'succeeded'})
+
+
 
 		
 
