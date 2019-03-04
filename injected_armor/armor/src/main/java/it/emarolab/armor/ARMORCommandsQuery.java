@@ -34,26 +34,28 @@ public class ARMORCommandsQuery {
     //code for cleanOntology command
 
     static ArmorDirectiveRes cleanOntology(ArmorDirectiveReq request, ArmorDirectiveRes response, Boolean fullIRIName) {
-        // Clean an ontonology by removing individuals.
-
+        // Clean an ontonology by removing individuals
         //take the ontology reference
         OWLReferences ontoRef = (OWLReferences)
                 OWLReferencesInterface.OWLReferencesContainer.getOWLReferences(request.getReferenceName());
 
         //for (int i = 0; i < request.getArgs().size(); i++) {
-            //retreive individuals from an ontology by passing a class name and set to an OwlNamedIndividual
-            //the class name is retreived from the service request
+        //retreive individuals from an ontology by passing a class name and set to an OwlNamedIndividual
+        //the class name is retreived from the service request
         Set<OWLNamedIndividual> individuals = ontoRef.getIndividualB2Class(request.getArgs().get(0));
+        //System.out.println(individuals);
         //get list of individuals as a string
         List<String> individualsList = getStringListFromQuery(individuals, ontoRef, fullIRIName);
+        System.out.println("Clean will remove those individuals from the ontology: "+individualsList);
         //remove individuals from ontology
         for (int j = 0; j < individualsList.size(); j++) {
                 ontoRef.removeIndividual(individualsList.get(j));
         }
         ontoRef.synchronizeReasoner();
+        //System.out.println("Now the ontology contains: "+ontoRef.getIndividualB2Thing());
 
         setResponse(request.getReferenceName(), true, 0, "", response);
-	System.out.println("CLEAN DONE");
+	    System.out.println("CLEAN DONE");
         return response;
     }
 
