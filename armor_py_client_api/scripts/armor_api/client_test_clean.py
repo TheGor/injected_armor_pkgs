@@ -16,5 +16,5 @@ __status__ = "Development"
 #then get the name of the ontology
 
 client = ArmorClient("client", "reference")
-client.call("CLEAN","","",["Sphere","Plane"])
+client.call("CLEAN","","",["GeometricPrimitive"])
 client.utils.set_log_to_terminal(True)

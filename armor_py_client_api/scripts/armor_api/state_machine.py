@@ -73,7 +73,6 @@ class Processing_response_general(smach.State):
 	rospy.loginfo('Executing state Processing Response General')
 	rospy.loginfo(userdata.processing_response_general_input_2)
 	if userdata.processing_response_general_input_2 == 'scene':
-		rospy.loginfo('michele maiale')
 		return 'processing_1'
 	elif (userdata.processing_response_general_input_2 == 'plane' or userdata.processing_response_general_input_2 == 'sphere'):
 		return 'processing_2'
@@ -328,13 +327,14 @@ def main():
 		smach.StateMachine.add('LOOK_SCENE',smach_ros.ServiceState('send_objects',ArmorObjects,request_cb = 									scene_request_cb),transitions={'succeeded':'LISTEN'})
 
 		#define state listen
-		smach.StateMachine.add('LISTEN',Listen(),transitions={'ready':'QUERY', 'not_ready':'aborted'})
+		smach.StateMachine.add('LISTEN',Listen(),transitions={'ready':'QUERY', 'not_ready':'CLEAN_ONTOLOGY'})
 
 
 		#define function for querying a robot
 		def query_request_cb(userdata,request):
 			#query_request = ArmorDirectiveRequest()
 			query_string='PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX owl: <http://www.w3.org/2002/07/owl#> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX sit: <http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit#> SELECT ?p ?cls WHERE { sit:TestScene (owl:equivalentClass|(owl:intersectionOf/rdf:rest*/rdf:first))* ?restriction . ?restriction owl:minQualifiedCardinality ?min . '
+			#query_name=[]
 			query_name=raw_input('prototipo di domanda\n')
 			#first type of question
 			rospy.loginfo(type(query_name))
@@ -349,7 +349,7 @@ def main():
 				request.armor_request.args=[query_string+' ?restriction owl:onClass ?cls . ?restriction owl:onProperty ?p . }']
 				return request
 			#second type of question
-			if(query_name=='sphere' or query_name=='plane'):
+			elif(query_name=='sphere' or query_name=='plane'):
 				request.armor_request.client_name = "client"
 				request.armor_request.reference_name = "reference"
 				request.armor_request.command = "QUERY"
@@ -358,6 +358,9 @@ def main():
 				request.armor_request.args=[query_string+' {?restriction owl:onProperty ?p . FILTER(regex(str(?p),\"'+query_name+'\",\"i\"))} UNION {  ?restriction owl:onClass ?cls . FILTER (regex(str(?cls),\"'+query_name+'\",\"i\"))}}  LIMIT 1']
 				rospy.loginfo('%s',request.armor_request.args)
 				return request
+
+			#third type of question
+			
 		#define function query result processing
 		def query_response_cb(userdata,response):
 			#query_response = ArmorDirectiveResponse()
@@ -386,7 +389,22 @@ def main():
 			smach.StateMachine.add('PROCESSING_RESPONSE_2',Processing_response_2(),transitions={'got_it':'done'},remapping={'processing_response_input_1':'output','processing_response_input_2':'keyword'})
 		
 		#first state of the submachine		
-		smach.StateMachine.add('PROCESSING_RESPONSE',sm1, transitions={'done':'succeeded'})
+		smach.StateMachine.add('PROCESSING_RESPONSE',sm1, transitions={'done':'LISTEN'})
+
+
+		#definition state for clean
+		def clean_ontology_request_cb(userdata,request):
+			clean_ontology_request = ArmorDirectiveRequest()
+			clean_ontology_request.armor_request.client_name = "client"
+			clean_ontology_request.armor_request.reference_name = "reference"
+			clean_ontology_request.armor_request.command = "CLEAN"
+			clean_ontology_request.armor_request.primary_command_spec = ""
+			clean_ontology_request.armor_request.secondary_command_spec = ""
+			#pay attention to the true parameter for adding new individuals
+			clean_ontology_request.armor_request.args = ['GeometricPrimitive']
+		
+		smach.StateMachine.add('CLEAN_ONTOLOGY',smach_ros.ServiceState('armor_interface_srv',ArmorDirective,request_cb = 									clean_ontology_request_cb),transitions={'succeeded':'LOOK'})
+		
 
 
 

@@ -40,20 +40,20 @@ public class ARMORCommandsQuery {
         OWLReferences ontoRef = (OWLReferences)
                 OWLReferencesInterface.OWLReferencesContainer.getOWLReferences(request.getReferenceName());
 
-        for (int i = 0; i < request.getArgs().size(); i++) {
+        //for (int i = 0; i < request.getArgs().size(); i++) {
             //retreive individuals from an ontology by passing a class name and set to an OwlNamedIndividual
             //the class name is retreived from the service request
-            Set<OWLNamedIndividual> individuals = ontoRef.getIndividualB2Class(request.getArgs().get(0));
-            //get list of individuals as a string
-            List<String> individualsList = getStringListFromQuery(individuals, ontoRef, fullIRIName);
-            //remove individuals from ontology
-            for (int j = 0; j < individualsList.size(); j++) {
+        Set<OWLNamedIndividual> individuals = ontoRef.getIndividualB2Class(request.getArgs().get(0));
+        //get list of individuals as a string
+        List<String> individualsList = getStringListFromQuery(individuals, ontoRef, fullIRIName);
+        //remove individuals from ontology
+        for (int j = 0; j < individualsList.size(); j++) {
                 ontoRef.removeIndividual(individualsList.get(j));
-            }
         }
         ontoRef.synchronizeReasoner();
 
         setResponse(request.getReferenceName(), true, 0, "", response);
+	System.out.println("CLEAN DONE");
         return response;
     }
 
