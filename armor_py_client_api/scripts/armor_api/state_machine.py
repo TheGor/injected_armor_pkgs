@@ -69,17 +69,22 @@ class Listen(smach.State):
 #definine a general state which evaluates the keyowrd in input and choose the right processing_respoonse
 class Processing_response_general(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['processing_1','processing_2'],input_keys=['processing_response_general_input_1','processing_response_general_input_2'])
+        smach.State.__init__(self, outcomes=['processing_1','processing_2','not_processing'],input_keys=['processing_response_general_input_1','processing_response_general_input_2'])
 
     def execute(self,userdata):
 	rospy.loginfo('Executing state PROCESSING_RESPONSE_GENERAL')
-	#rospy.loginfo(userdata.processing_response_general_input_2)
-	if userdata.processing_response_general_input_2[0] == 'scene':
+	rospy.loginfo(userdata.processing_response_general_input_2)
+	rospy.loginfo(type(userdata.processing_response_general_input_2))
+	if  len(userdata.processing_response_general_input_2)==0:
+		print('$$$ I do not see what you asking me')
+		return 'not_processing'
+	elif userdata.processing_response_general_input_2[0] == 'scene':
 		return 'processing_1'
 	elif (userdata.processing_response_general_input_2[0] == 'plane' or userdata.processing_response_general_input_2[0] == 'sphere'):
 		return 'processing_2'
 	elif len(userdata.processing_response_general_input_2) > 1:
 		return 'processing_1'
+
 
 
 #defining processing_response for the keyword 'scene' AND for keyword propeerty + object (right, sphere)
@@ -147,7 +152,7 @@ class Processing_response_1(smach.State):
 		final_sentences.append(s)
 		j=j+2
 	for z in final_sentences:
-		print('$$$$ '+z)
+		print('$$$ '+z)
 	return 'got_it' 
 
 #defining processing_response for the keyword 'plane' or 'sphere'
@@ -423,6 +428,10 @@ def main():
 					list_keyword.append(x)
 				elif (x == "above" or x == "below" or x == "right" or x == "left" or x == "front" or x == "behind"):
 					list_keyword.append(x)
+			#if we dont have the predicted keyword
+			if len(list_keyword)==0 :
+				print('michele schifo')
+				return request
 			#assign list_keyword to userdata for propagating through states 
 			userdata.query_output_1=list_keyword
 			#print all the keywords
@@ -458,6 +467,8 @@ def main():
 					request.armor_request.args=[query_string+' ?restriction owl:onClass ?cls . ?restriction owl:onProperty ?p . FILTER(regex(str(?p),\"'+list_keyword[0]+'\",\"i\") && regex(str(?cls),\"'+list_keyword[1]+'\",\"i\"))}  ']
 				#rospy.loginfo('%s',request.armor_request.args)
 				return request
+
+
 				
 		
 		def query_response_cb(userdata,response):
@@ -477,7 +488,7 @@ def main():
 		#define Processing_response state
 		with sm1:
 			#adding state processing general
-			smach.StateMachine.add('PROCESSING_RESPONSE_GENERAL',Processing_response_general(),transitions={'processing_1':'PROCESSING_RESPONSE_1','processing_2':'PROCESSING_RESPONSE_2'},remapping={'processing_response_general_input_1':'output','processing_response_general_input_2':'keyword'})
+			smach.StateMachine.add('PROCESSING_RESPONSE_GENERAL',Processing_response_general(),transitions={'processing_1':'PROCESSING_RESPONSE_1','processing_2':'PROCESSING_RESPONSE_2','not_processing':'done'},remapping={'processing_response_general_input_1':'output','processing_response_general_input_2':'keyword'})
 				
 			
 			#adding state processing_repsonse_1 which process response for keyword scene or for keyword property+object
