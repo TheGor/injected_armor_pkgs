@@ -30,10 +30,13 @@ class Look(smach.State):
 
     def callback(self, data):
   	if data.data == 1:
+	    #print("HO RICEUTO 1")
             self.one_received = True
         elif data.data == 2:
+	    #print("HO RICEUTO 2")
             self.two_received = True
         elif data.data == 3:
+            #print("HO RICEUTO 3")
             self.three_received = True
        
 
@@ -42,10 +45,16 @@ class Look(smach.State):
 	#rospy.loginfo('flag = %f'%data.data)
 	time.sleep(15)
 	if self.one_received:
+		print("$$$ I am looking configuration 1")
+		self.one_received = False
 		userdata.look_case_in=1
 	elif self.two_received:
+		print("$$$  I am looking configuration 2")
+		self.two_received = False
 		userdata.look_case_in=2
 	elif self.three_received:
+		print("$$$  I am looking configuration 3")
+		self.three_received = False
 		userdata.look_case_in=3
 	else:
 		return 'failed'
