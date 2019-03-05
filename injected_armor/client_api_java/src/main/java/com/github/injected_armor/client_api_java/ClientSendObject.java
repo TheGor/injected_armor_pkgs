@@ -110,10 +110,10 @@ public class ClientSendObject extends AbstractNodeMain {
         object_1.getSfera().getCentermsg().setYmsg(15.0);
         object_1.getSfera().getCentermsg().setZmsg(15.0);
         //we defined second sphere in the second cell of the array
-        object_2.getSfera().setRadiusmsg(1.0);
-        object_2.getSfera().getCentermsg().setXmsg(5.0);
-        object_2.getSfera().getCentermsg().setYmsg(5.0);
-        object_2.getSfera().getCentermsg().setZmsg(5.0);
+        object_2.getSfera().setRadiusmsg(1.5);
+        object_2.getSfera().getCentermsg().setXmsg(10.0);
+        object_2.getSfera().getCentermsg().setYmsg(10.0);
+        object_2.getSfera().getCentermsg().setZmsg(10.0);
         //we add it to the arraylist
         all_objects.add(object_1);
         all_objects.add(object_2);
@@ -125,9 +125,9 @@ public class ClientSendObject extends AbstractNodeMain {
         object_seen.add("Plane");
 
         object_1.getSfera().setRadiusmsg(1.5);
-        object_1.getSfera().getCentermsg().setXmsg(15.0);
-        object_1.getSfera().getCentermsg().setYmsg(15.0);
-        object_1.getSfera().getCentermsg().setZmsg(15.0);
+        object_1.getSfera().getCentermsg().setXmsg(5.0);
+        object_1.getSfera().getCentermsg().setYmsg(5.0);
+        object_1.getSfera().getCentermsg().setZmsg(5.0);
 
         object_2.getPiano().getCentermsg().setXmsg(0.5);
         object_2.getPiano().getCentermsg().setYmsg(0.5);
@@ -147,23 +147,22 @@ public class ClientSendObject extends AbstractNodeMain {
         object_seen.add("Plane");
 
         object_1.getSfera().setRadiusmsg(1.5);
-        object_1.getSfera().getCentermsg().setXmsg(15.0);
-        object_1.getSfera().getCentermsg().setYmsg(15.0);
-        object_1.getSfera().getCentermsg().setZmsg(15.0);
+        object_1.getSfera().getCentermsg().setXmsg(20.0);
+        object_1.getSfera().getCentermsg().setYmsg(20.0);
+        object_1.getSfera().getCentermsg().setZmsg(20.0);
 
+        object_2.getSfera().setRadiusmsg(1.5);
+        object_2.getSfera().getCentermsg().setXmsg(25.0);
+        object_2.getSfera().getCentermsg().setYmsg(25.0);
+        object_2.getSfera().getCentermsg().setZmsg(25.0);
 
-        object_2.getSfera().setRadiusmsg(1.0);
-        object_2.getSfera().getCentermsg().setXmsg(5.0);
-        object_2.getSfera().getCentermsg().setYmsg(5.0);
-        object_2.getSfera().getCentermsg().setZmsg(5.0);
-
-        object_3.getPiano().getCentermsg().setXmsg(0.5);
-        object_3.getPiano().getCentermsg().setYmsg(0.5);
-        object_3.getPiano().getCentermsg().setZmsg(0.5);
-        object_3.getPiano().getAxismsg().setAx(0.5);
-        object_3.getPiano().getAxismsg().setAy(0.5);
-        object_3.getPiano().getAxismsg().setAz(0.5);
-        object_3.getPiano().setHessianmsg(0.5);
+        object_3.getPiano().getCentermsg().setXmsg(1.0);
+        object_3.getPiano().getCentermsg().setYmsg(1.0);
+        object_3.getPiano().getCentermsg().setZmsg(1.0);
+        object_3.getPiano().getAxismsg().setAx(1.0);
+        object_3.getPiano().getAxismsg().setAy(1.0);
+        object_3.getPiano().getAxismsg().setAz(1.0);
+        object_3.getPiano().setHessianmsg(1.0);
 
         all_objects.add(object_1);
         all_objects.add(object_2);

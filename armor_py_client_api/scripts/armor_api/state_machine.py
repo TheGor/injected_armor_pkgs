@@ -314,18 +314,18 @@ def main():
 				object1 = SphereMSG()
 				object2 = PlaneMSG()
 				#Definition Sphere
-				object1.radiusmsg = 0.1
-				object1.centermsg.xmsg = 5.0
-				object1.centermsg.ymsg = 5.0
-				object1.centermsg.zmsg = 5.0
+				object1.radiusmsg = 1.0
+				object1.centermsg.xmsg = 2.0
+				object1.centermsg.ymsg = 2.0
+				object1.centermsg.zmsg = 2.0
 				#Definition Plane
-				object2.hessianmsg = 0.6
-				object2.centermsg.xmsg = 0.6
-				object2.centermsg.ymsg = 0.6
-				object2.centermsg.zmsg = 0.6
-				object2.axismsg.ax = 0.5
-				object2.axismsg.ay = 0.5
-				object2.axismsg.az = 0.5
+				object2.hessianmsg = 0.2
+				object2.centermsg.xmsg = 0.2
+				object2.centermsg.ymsg = 0.2
+				object2.centermsg.zmsg = 0.2
+				object2.axismsg.ax = 0.2
+				object2.axismsg.ay = 0.2
+				object2.axismsg.az = 0.2
 				objects1.sfera = object1
 				objects2.piano = object2
 				
@@ -341,15 +341,15 @@ def main():
 				object1 = SphereMSG()
 				object2 = SphereMSG()
 				#Definition Sphere
-				object1.radiusmsg = 0.1
-				object1.centermsg.xmsg = 0.3
-				object1.centermsg.ymsg = 0.3
-				object1.centermsg.zmsg = 0.3
+				object1.radiusmsg = 1.0
+				object1.centermsg.xmsg = 4.0
+				object1.centermsg.ymsg = 4.0
+				object1.centermsg.zmsg = 4.0
 				#Definition Sphere
-				object2.radiusmsg = 5.0
-				object2.centermsg.xmsg = 3.0
-				object2.centermsg.ymsg = 3.0
-				object2.centermsg.zmsg = 3.0
+				object2.radiusmsg = 1.0
+				object2.centermsg.xmsg = 6.0
+				object2.centermsg.ymsg = 6.0
+				object2.centermsg.zmsg = 6.0
 
 				objects1.sfera = object1
 				objects2.sfera = object2
@@ -370,22 +370,22 @@ def main():
 				scenethree_request = ArmorObjectsRequest()
 				#Definition Sphere
 				object1.radiusmsg = 1.0
-				object1.centermsg.xmsg = 15.0
-				object1.centermsg.ymsg = 15.0
-				object1.centermsg.zmsg = 15.0
+				object1.centermsg.xmsg = 10.0
+				object1.centermsg.ymsg = 10.0
+				object1.centermsg.zmsg = 10.0
 				#Definition Sphere
 				object2.radiusmsg = 1.0
-				object2.centermsg.xmsg = 10.0
-				object2.centermsg.ymsg = 10.0
-				object2.centermsg.zmsg = 10.0
+				object2.centermsg.xmsg = 8.0
+				object2.centermsg.ymsg = 8.0
+				object2.centermsg.zmsg = 8.0
 				#Definition Plane
-				object3.hessianmsg = 0.5
-				object3.centermsg.xmsg = 4.0
-				object3.centermsg.ymsg = 4.0
-				object3.centermsg.zmsg = 4.0
-				object3.axismsg.ax = 0.5
-				object3.axismsg.ay = 0.5
-				object3.axismsg.az = 0.5
+				object3.hessianmsg = 0.4
+				object3.centermsg.xmsg = 0.4
+				object3.centermsg.ymsg = 0.4
+				object3.centermsg.zmsg = 0.4
+				object3.axismsg.ax = 0.4
+				object3.axismsg.ay = 0.4
+				object3.axismsg.az = 0.4
 
 				objects1.sfera = object1
 				objects2.sfera = object2
