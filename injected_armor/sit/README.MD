@@ -18,6 +18,15 @@ of this implementation.
 Check also the [Test](https://github.com/EmaroLab/scene_identification_tagging/blob/sit_owloop/sit/src/main/java/it/emarolab/scene_identification_tagging/Test.java)
 runnable class to see how the algorithm can be implemented by using this API.
 
+## New Classes
+
+[Sit](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/injected_armor/sit/src/main/java/it/emarolab/sit/SIT.java) works same as
+[Test](https://github.com/EmaroLab/scene_identification_tagging/blob/sit_owloop/sit/src/main/java/it/emarolab/scene_identification_tagging/Test.java) but this new is class isn't a main. In this way, a ROS client could call the SIT algorithm through the armor request
+
+[TestSceneReverseOrder](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/injected_armor/sit/src/main/java/it/emarolab/sit/TestSceneReverseOrder.java) is a class that sort in descending order the list of Test Scene in order to retrive the scene with higher cardinality that should be used in a sparql query.
+
+
+
 ## Algorithm
 
 The algorithm is based on an OWL ontology, the Pellet reasoner and couple of mapping functions.

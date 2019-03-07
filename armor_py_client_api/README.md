@@ -36,5 +36,17 @@ your code will work (it should find an **\_\_init\_\_.py** file only). Adding so
 will allow you to see ArmorPy code for quick reference, easier debugging and 
 getting rid of annoying warnings.
 
+# New python clients
+
+[load_ontology_amor](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/armor_py_client_api/scripts/armor_api/load_ontology_amor.py) sends the ontology file to AMOR by given the predefined command “LOAD” and the path to the ontology file as parameter of the service request.
+
+[init_sit](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/armor_py_client_api/scripts/armor_api/init_sit.py) that is responsible for activating SIT by passing the ontology file, previously loaded in AMOR.
+
+[publisher_send_scene](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/armor_py_client_api/scripts/armor_api/publisher_send_scene.py) simulates the functionality of PIT by defining some fixed table-top scenario with two or three objects thanks to messages and ArmorObjects.
+
+[clean_ontology](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/armor_py_client_api/scripts/armor_api/clean_ontology.py) is responsible for eliminating all individuals contained in the ontology
+
+[state_machine](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/armor_py_client_api/scripts/armor_api/state_machine.py) shows a complete simulation of the robot behaviour (see report ) 
+
 # Author
  - [alessio.capitanelli@dibris.unige.it](mailto:alessio.capitanelli@dibris.unige.it).

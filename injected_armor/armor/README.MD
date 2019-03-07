@@ -32,6 +32,20 @@ ARMOR expands AMOR capabilities in the following ways:
   
 Legacy support for OWL api 3.4.5 is available on the [OWL-api3 branch](https://github.com/EmaroLab/armor/tree/OWL-api3). Use it in conjunction with [AMOR OWL-api3 branch](https://github.com/EmaroLab/multi_ontology_reference/tree/OWL-api3).
 
+## New classes 
+
+[ARMORLinkSit](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/injected_armor/armor/src/main/java/it/emarolab/armor/ARMORLinkSit.java) link ARMOR to SIT checking if there are any object to send to SIT
+
+[ARMORCommandUtility](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/injected_armor/armor/src/main/java/it/emarolab/armor/ARMORCommandUtility.java) contains a response for commmand INIT SIT.
+
+[ARMORMainService](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/injected_armor/armor/src/main/java/it/emarolab/armor/ARMORMainService.java) also contains callback ArmorObjects.srv. Then set the response to give to a client. 
+
+## Modified classe
+
+[ARMORCommandsQuery](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/injected_armor/armor/src/main/java/it/emarolab/armor/ARMORCommandsQuery.java) contains command CLEAN ONTOLOGY.
+
+
+
 ## Installation and dependencies
 
 The latest stable release of this project and its direct dependencies (ARMOR, AMOR and the required ROS messages) can be downloaded from this [**repository**](https://github.com/EmaroLab/ros_multi_ontology_references.git).
@@ -98,8 +112,34 @@ rosservice call /armor_interface_serialized_srv "armor_requests:
      secondary_command_spec: ''
      args: ['']"
 ```
+There is a new service for sending a scene to Armor
 
-### Request
+Use `/send_objects` to execute it:
+
+```
+rosservice call /send_objects "name_object:
+- ''
+thing:
+- sfera:
+    centermsg:
+      xmsg: 0.0
+      ymsg: 0.0
+      zmsg: 0.0
+    radiusmsg: 0.0
+  piano:
+    centermsg:
+      xmsg: 0.0
+      ymsg: 0.0
+      zmsg: 0.0
+    axismsg:
+      ax: 0.0
+      ay: 0.0
+      az: 0.0
+    hessianmsg: 0.0" 
+```
+
+
+### Request for /armor_interface_srv
 
 `ArmorDirective.srv` request depends only on `ArmorDirectiveReq.msg`, whose fields are:
 
@@ -118,7 +158,21 @@ The complete list of **commands** and **directives** can be found here:
 
 [**COMMANDS DOCUMENTATION**](https://github.com/EmaroLab/armor/blob/master/commands.md)
 
-### Response
+but there also other commands implemented :
+
+Init Sit : starts the sit by passing the ontology
+Clean    : remove all individuals from ontology
+
+
+| Effect                          | Command     | 1s spec.       | 2nd spec.      | args[0]      | args[1]       | args[2]        | args[3]        | args[4]    |
+|---------------------------------|:-----------:|:--------------:|:--------------:|:------------:|:-------------:|:--------------:|:--------------:|:----------:|
+| Init Sit                   |   INIT       | -            | -              | -     | -             | -              | -              | -          |
+| Clean Ontology                  |   CLEAN       |   -          |   -       | -     | -      | -              | -              | "GeometricPrimitve"          |
+
+
+
+
+### Response /armor_interface_srv
 
 `ArmorDirective.srv` request depends only on `ArmorDirectiveRes.msg`, whose fields are:
 
@@ -155,6 +209,14 @@ The complete list of **commands** and **directives** can be found here:
 | **203**                  | *Cannot mount client on specified reference*                    |
 | **204**                  | *Debug only, command defined but not implemented*               |
 | **205**                  | *Non-existing command/specification*                            |
+
+
+### Request for /send_objects
+[ArmorObjects.srv](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/injected_armor_msgs/srv/ArmorObjects.srv) request depends on [ListObjects.msg](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/injected_armor_msgs/msg/ListObjects.msg) and an ArrayList of strings
+
+### Respone for /send_objects
+[ArmorObjects.srv](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/injected_armor_msgs/srv/ArmorObjects.srv) response depends on ArrayList of strings
+
 
 
 ## Publication
