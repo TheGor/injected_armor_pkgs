@@ -31,6 +31,14 @@ public class ARMORCommandsQuery {
 
     /////////////////       QUERY COMMANDS       /////////////////
 
+    /**
+     * method for cleaning an ontology from his individuals
+     * @param request : request of armor_interface_srv
+     * @param response : response of armor_interface_srv
+     * @param fullIRIName : iri of the ontology
+     * @return : retruns armor_interface_srv
+     */
+
     //code for cleanOntology command
 
     static ArmorDirectiveRes cleanOntology(ArmorDirectiveReq request, ArmorDirectiveRes response, Boolean fullIRIName) {

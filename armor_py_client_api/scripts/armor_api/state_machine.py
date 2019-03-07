@@ -12,6 +12,14 @@ import random
 from std_msgs.msg import Int16
 import time
 
+"""
+State machine that simulates:
+	Loading of an ontology to amor
+	Init sit
+	Acquistion of a scene by the robot
+	Dialogue with robot
+"""
+
 path = dirname(realpath(__file__))
 path = path + "/../../test/empty-scene.owl"
 

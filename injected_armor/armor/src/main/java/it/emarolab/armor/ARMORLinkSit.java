@@ -7,6 +7,11 @@ import it.emarolab.armor.ARMORCommandUtility;
 
 import java.util.*;
 
+/**
+ * This class link ARMOR to SIT
+ *
+ */
+
 class ARMORLinkSit {
 
 	private Boolean response;
@@ -19,7 +24,13 @@ class ARMORLinkSit {
 		
 	}
 
-
+	/**
+	 * checks if there are objects in name object list and if
+	 * there are objects,calls sit
+	 * @param name : list of obects name
+	 * @param r  : list of objects
+	 * @return
+	 */
 	public List<String> AreObjects(List<String> name,List<ListObjects> r){
 
 		//checks if there are objects

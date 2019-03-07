@@ -13,7 +13,8 @@ import injected_armor_msgs.*;
 import java.util.*;
 
 /**
- * A simple {@link Publisher} {@link NodeMain}.
+ *  Client that simulates PIT
+ * It uses send_object service defined in armor to send different scenes
  */
 
 

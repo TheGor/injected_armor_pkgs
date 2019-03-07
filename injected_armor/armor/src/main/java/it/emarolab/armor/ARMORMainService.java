@@ -42,11 +42,9 @@ public class ARMORMainService extends AbstractNodeMain {
 
         ARMORResourceManager.setLogging(connectedNode);
 
-        // TODO this is just a test for sit
-        //it.emarolab.sit.Test.main( new String[]{"null","null"});
-	    // Callback for ArmorObjects.srv calls
 
-        //server that interacts with the sendObjectclient through ArmorObjects service
+
+        //Callback for ArmorObjects.srv
         //it creates linkSit that connects armor to sit, it's a sort of bridge
         //Linksit set the response for the server
 

@@ -19,10 +19,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.*;
 
-// sit class
-// the second client starts the sit (you should see "SIT ACTIVE" in your terminal
-//then the third client pass to sit all the object's features
-// it also execute reasoning and learning
+/**
+ * SIT CLASS
+ * It takes object feature and process and ontology and then
+ * starts reasoning and leanring
+ */
 
 public class SIT {
 

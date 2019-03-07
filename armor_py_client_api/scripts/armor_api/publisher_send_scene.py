@@ -6,6 +6,11 @@ from std_msgs.msg import Int16
 import random
 from random import randint
 
+"""
+Publiisher that sends an int number 
+It is used to simulate pit for the state machine
+"""
+
 def talker():
 #declares that your node is publishing to the chatter topic using the message type Int16. 
 #Int16 here is actually the class std_msgs.msg.Int16. 

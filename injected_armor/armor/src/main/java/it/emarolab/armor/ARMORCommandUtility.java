@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * <p>
  * This class contains static methods to perform utility operations on an ontology.
+ * It also contains a method for starting sit
  * </p>
  *
  * @version 2.0
@@ -221,9 +222,14 @@ class ARMORCommandUtility {
         return response;
     }
 
-    //Methods for sending the ontology to sit
-    //per michele ho cambiato il nome del metodo da sendEmptyScene a initSit
+    /**
+     * pass the ontology to sit and init it
+     * @param request : request of armor_interface_srv
+     * @param response :  response of armor_interface_srv
+     * @return : ressponse
+     */
     static ArmorDirectiveRes initSit(ArmorDirectiveReq request, ArmorDirectiveRes response) {
+        //Methods for sending the ontology to sit
 	// Send ontology named as empty_scene to SIT, basically it starts sit
         //some operations with arraylist and set
         String ontoRef = request.getReferenceName();
@@ -236,16 +242,11 @@ class ARMORCommandUtility {
 		onto_empty.add(element);
 	}
     //if we find the ontology we pass it to the sit and start the sit
-        //the name of the ontology is a global vairbale of the class sit
+        // the name of the ontology is a global vairbale of the class sit
 
 	if(onto_empty.contains(ontoRef)){
-		//it.emarolab.sit.Test.main( new String[]{"null","null"});
-		//SIT sit = new SIT(ontoRef);
-
 		SIT.s = ontoRef;
         System.out.println("SIT active");
-		//sit.riconoscimento();
-		
 	}
 	//send response
 	setResponse(true,0,onto_empty,response);
