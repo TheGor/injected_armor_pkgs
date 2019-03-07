@@ -373,7 +373,6 @@ def main():
 				elif (x == "above" or x == "below" or x == "right" or x == "left" or x == "front" or x == "behind" or x == "along"):
 					list_keyword.append(x)
 			#if we dont have the predicted keyword
-			print(request)
 			if len(list_keyword)==0:
 				return request
 			#assign list_keyword to userdata for propagating through states 
