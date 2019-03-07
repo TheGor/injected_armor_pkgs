@@ -181,7 +181,7 @@ public class ClientSendObject extends AbstractNodeMain {
 		connectedNode.getLog().info(response.getCey());
 		connectedNode.getLog().info(response.getCez());
 		connectedNode.getLog().info(response.getRad());*/
-		connectedNode.getLog().info(response.getStatus());
+		connectedNode.getLog().info(response.getSceneName());
       }
 
       @Override

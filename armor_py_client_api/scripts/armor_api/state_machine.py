@@ -62,12 +62,13 @@ class Look(smach.State):
 	
 class Listen(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['ready','not_ready'])
+        smach.State.__init__(self, outcomes=['ready','not_ready'],input_keys=['list_in'],output_keys=['list_out'])
 
     def execute(self,userdata):
 	rospy.loginfo('Executing state LISTEN')
 	self.answer=raw_input("$$$ Do you want to ask something to Me?\n")
 	if self.answer == 'yes':
+		userdata.list_out = userdata.list_in
 		print('$$$ Ok, i will reply your questions')
 		return 'ready'
 	else:
@@ -78,15 +79,19 @@ class Listen(smach.State):
 #definine a general state which evaluates the keyowrd in input and choose the right processing_respoonse
 class Processing_response_general(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['processing_1','processing_2','not_processing'],input_keys=['processing_response_general_input_1','processing_response_general_input_2'])
+        smach.State.__init__(self, outcomes=['processing_1','processing_2','not_proc'],input_keys=['processing_response_general_input_1','processing_response_general_input_2'])
 
     def execute(self,userdata):
 	rospy.loginfo('Executing state PROCESSING_RESPONSE_GENERAL')
 	rospy.loginfo(userdata.processing_response_general_input_2)
 	rospy.loginfo(type(userdata.processing_response_general_input_2))
-	if  len(userdata.processing_response_general_input_2)==0:
+	rospy.loginfo(userdata.processing_response_general_input_1)
+	rospy.loginfo(type(userdata.processing_response_general_input_1[0]))
+	rospy.loginfo(len(userdata.processing_response_general_input_1))
+	#if((len(userdata.processing_response_general_input_2)==0) or (len(userdata.processing_response_general_input_1)==0)):
+	if (len(userdata.processing_response_general_input_2)==0 or userdata.processing_response_general_input_1[0]==''):
 		print('$$$ I do not see what you asking me')
-		return 'not_processing'
+		return 'not_proc'
 	elif userdata.processing_response_general_input_2[0] == 'scene':
 		return 'processing_1'
 	elif (userdata.processing_response_general_input_2[0] == 'plane' or userdata.processing_response_general_input_2[0] == 'sphere'):
@@ -105,9 +110,10 @@ class Processing_response_1(smach.State):
 	rospy.loginfo('Executing state PROCESSING_RESPONSE_1 ')
 	#rospy.loginfo('now u got: %s'%userdata.processing_response_input_1)
         #rospy.loginfo('name: %s'%userdata.processing_response_input_2)
-        
 	#save the response in a tmp variable
 	tmp=userdata.processing_response_input_1
+	#rospy.loginfo(tmp)
+		
 	#string manipulation
 	for x in tmp:
 		#rospy.loginfo('x iniziale %s ',x)
@@ -140,6 +146,10 @@ class Processing_response_1(smach.State):
 					sentences[k]=sentences[k].replace('Left',' Left ')
 				elif('InFront' in sentences[k]):
 					sentences[k]=sentences[k].replace('InFront',' In Front ')
+				elif('Below' in sentences[k]):
+					sentences[k]=sentences[k].replace('Below',' Below ')
+				elif('Along' in sentences[k]):
+					sentences[k]=sentences[k].replace('Along',' Along ')
 			elif('Sphere' in sentences[k]):
 				sentences[k]=sentences[k].replace('Sphere','Sphere ')
 				if('Behind' in sentences[k]):
@@ -152,6 +162,8 @@ class Processing_response_1(smach.State):
 					sentences[k]=sentences[k].replace('Left',' Left ')
 				elif('InFront' in sentences[k]):
 					sentences[k]=sentences[k].replace('InFront',' In Front ')
+				elif('Along' in sentences[k]):
+					sentences[k]=sentences[k].replace('Along',' Along ')
 	#rospy.loginfo('la mia frase diventa %s ', sentences)		
 	#try to build the final sentence
 	final_sentences=[]
@@ -187,6 +199,9 @@ class Processing_response_2(smach.State):
 		x=x.replace("isLeftOf","")
 		x=x.replace("isInFrontOf","")
 		x=x.replace("isAboveOf","")
+		x=x.replace("isAlongXWith","")
+		x=x.replace("isAlongYWith","")
+		x=x.replace("isAlongZWith","")
 		#rospy.loginfo('x finale %s ',x)
 	tmp1=[]
 	tmp1.append(x)
@@ -272,6 +287,7 @@ def main():
 	sm.userdata.sm_case=0
 	sm.userdata.output=""
 	sm.userdata.keyword=[]
+	sm.userdata.output_name_scene=[]
 	
 	with sm:
 		#define function for loading an ontology, with armorDirectiveSrv
@@ -324,17 +340,17 @@ def main():
 				object2 = PlaneMSG()
 				#Definition Sphere
 				object1.radiusmsg = 1.0
-				object1.centermsg.xmsg = 2.0
-				object1.centermsg.ymsg = 2.0
-				object1.centermsg.zmsg = 2.0
+				object1.centermsg.xmsg = 1.0
+				object1.centermsg.ymsg = 0.5
+				object1.centermsg.zmsg = 0.8
 				#Definition Plane
-				object2.hessianmsg = 0.2
-				object2.centermsg.xmsg = 0.2
-				object2.centermsg.ymsg = 0.2
-				object2.centermsg.zmsg = 0.2
-				object2.axismsg.ax = 0.2
-				object2.axismsg.ay = 0.2
-				object2.axismsg.az = 0.2
+				object2.hessianmsg = 0.8
+				object2.centermsg.xmsg = 0.5
+				object2.centermsg.ymsg = 0.5
+				object2.centermsg.zmsg = 0.8
+				object2.axismsg.ax = 1.0
+				object2.axismsg.ay = 1.0
+				object2.axismsg.az = 1.0
 				objects1.sfera = object1
 				objects2.piano = object2
 				
@@ -351,14 +367,14 @@ def main():
 				object2 = SphereMSG()
 				#Definition Sphere
 				object1.radiusmsg = 1.0
-				object1.centermsg.xmsg = 4.0
-				object1.centermsg.ymsg = 4.0
-				object1.centermsg.zmsg = 4.0
+				object1.centermsg.xmsg = 1.0
+				object1.centermsg.ymsg = 0.5
+				object1.centermsg.zmsg = 0.8
 				#Definition Sphere
 				object2.radiusmsg = 1.0
-				object2.centermsg.xmsg = 6.0
-				object2.centermsg.ymsg = 6.0
-				object2.centermsg.zmsg = 6.0
+				object2.centermsg.xmsg = 1.5
+				object2.centermsg.ymsg = 0.5
+				object2.centermsg.zmsg = 0.8
 
 				objects1.sfera = object1
 				objects2.sfera = object2
@@ -379,22 +395,22 @@ def main():
 				scenethree_request = ArmorObjectsRequest()
 				#Definition Sphere
 				object1.radiusmsg = 1.0
-				object1.centermsg.xmsg = 10.0
-				object1.centermsg.ymsg = 10.0
-				object1.centermsg.zmsg = 10.0
+				object1.centermsg.xmsg = 1.0
+				object1.centermsg.ymsg = 0.5
+				object1.centermsg.zmsg = 0.8
 				#Definition Sphere
 				object2.radiusmsg = 1.0
-				object2.centermsg.xmsg = 8.0
-				object2.centermsg.ymsg = 8.0
-				object2.centermsg.zmsg = 8.0
+				object2.centermsg.xmsg = 1.5
+				object2.centermsg.ymsg = 0.5
+				object2.centermsg.zmsg = 0.8
 				#Definition Plane
-				object3.hessianmsg = 0.4
-				object3.centermsg.xmsg = 0.4
-				object3.centermsg.ymsg = 0.4
-				object3.centermsg.zmsg = 0.4
-				object3.axismsg.ax = 0.4
-				object3.axismsg.ay = 0.4
-				object3.axismsg.az = 0.4
+				object3.hessianmsg = 0.8
+				object3.centermsg.xmsg = 0.5
+				object3.centermsg.ymsg = 0.5
+				object3.centermsg.zmsg = 0.8
+				object3.axismsg.ax = 1.0
+				object3.axismsg.ay = 1.0
+				object3.axismsg.az = 1.0
 
 				objects1.sfera = object1
 				objects2.sfera = object2
@@ -407,22 +423,26 @@ def main():
 			return scene_request
 			
 	
-				
+		#define response of scene
+		def scene_response_cb(userdata,response):
+			userdata.scene_name_list = response.scene_name
+			return 'succeeded'
 		
 		
 		#define scene state
-		smach.StateMachine.add('LOOK_SCENE',smach_ros.ServiceState('send_objects',ArmorObjects,request_cb = 									scene_request_cb),transitions={'succeeded':'LISTEN'})
+		smach.StateMachine.add('LOOK_SCENE',smach_ros.ServiceState('send_objects',ArmorObjects,request_cb = 									scene_request_cb,response_cb = scene_response_cb,output_keys=['scene_name_list']),transitions={'succeeded':'LISTEN'},remapping={'scene_name_list':'output_name_scene'})
 
 		#define state listen
-		smach.StateMachine.add('LISTEN',Listen(),transitions={'ready':'QUERY', 'not_ready':'CLEAN_ONTOLOGY'})
+		smach.StateMachine.add('LISTEN',Listen(),transitions={'ready':'QUERY', 'not_ready':'CLEAN_ONTOLOGY'},remapping={'list_in':'output_name_scene','list_out':'output_name_scene'})
 
 
 		#define function for querying a robot
 		def query_request_cb(userdata,request):
 			rospy.loginfo('Executing state QUERY')
+			#rospy.loginfo(userdata.first_scene)
 			#query_request = ArmorDirectiveRequest()
 			#keys_word = ['scene','sphere','plane','above','below','right','left','front','behind']
-			query_string='PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX owl: <http://www.w3.org/2002/07/owl#> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX sit: <http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit#> SELECT ?p ?cls WHERE { sit:TestScene (owl:equivalentClass|(owl:intersectionOf/rdf:rest*/rdf:first))* ?restriction . ?restriction owl:minQualifiedCardinality ?min . '
+			query_string='PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX owl: <http://www.w3.org/2002/07/owl#> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX sit: <http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit#> SELECT ?p ?cls WHERE { sit:'+userdata.first_scene[0]+' (owl:equivalentClass|(owl:intersectionOf/rdf:rest*/rdf:first))* ?restriction . ?restriction owl:minQualifiedCardinality ?min . '
 			#query_name=[]
 			#question
 			query_name=raw_input('$$$ I am ready to answer your question\n'+'**(insert your question by putting a space beetween each word (question mark included))**\n')
@@ -435,7 +455,7 @@ def main():
 					list_keyword.append(x)
 				elif (x == "sphere" or x == "plane"):
 					list_keyword.append(x)
-				elif (x == "above" or x == "below" or x == "right" or x == "left" or x == "front" or x == "behind"):
+				elif (x == "above" or x == "below" or x == "right" or x == "left" or x == "front" or x == "behind" or x == "along"):
 					list_keyword.append(x)
 			#if we dont have the predicted keyword
 			if len(list_keyword)==0 :
@@ -488,7 +508,7 @@ def main():
 			return 'succeeded';
 		
 		#adding state for query
-		smach.StateMachine.add('QUERY',smach_ros.ServiceState('armor_interface_srv',ArmorDirective,request_cb = 									query_request_cb,response_cb=query_response_cb,output_keys=['query_output','query_output_1']),transitions={'succeeded':'PROCESSING_RESPONSE'},remapping={'query_output':'output','query_output_1':'keyword'})
+		smach.StateMachine.add('QUERY',smach_ros.ServiceState('armor_interface_srv',ArmorDirective,request_cb = 									query_request_cb,response_cb=query_response_cb,output_keys=['query_output','query_output_1'],input_keys=['first_scene']),transitions={'succeeded':'PROCESSING_RESPONSE'},remapping={'query_output':'output','query_output_1':'keyword','first_scene':'output_name_scene'})
 
 		#create a substate machine which contains the processing of the response
 		
@@ -497,7 +517,7 @@ def main():
 		#define Processing_response state
 		with sm1:
 			#adding state processing general
-			smach.StateMachine.add('PROCESSING_RESPONSE_GENERAL',Processing_response_general(),transitions={'processing_1':'PROCESSING_RESPONSE_1','processing_2':'PROCESSING_RESPONSE_2','not_processing':'done'},remapping={'processing_response_general_input_1':'output','processing_response_general_input_2':'keyword'})
+			smach.StateMachine.add('PROCESSING_RESPONSE_GENERAL',Processing_response_general(),transitions={'processing_1':'PROCESSING_RESPONSE_1','processing_2':'PROCESSING_RESPONSE_2','not_proc':'done'},remapping={'processing_response_general_input_1':'output','processing_response_general_input_2':'keyword'})
 				
 			
 			#adding state processing_repsonse_1 which process response for keyword scene or for keyword property+object

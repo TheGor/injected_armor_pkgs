@@ -20,7 +20,7 @@ class ARMORLinkSit {
 	}
 
 
-	public boolean AreObjects(List<String> name,List<ListObjects> r){
+	public List<String> AreObjects(List<String> name,List<ListObjects> r){
 
 		//checks if there are objects
 		int cont = 0;
@@ -34,10 +34,10 @@ class ARMORLinkSit {
 			//SIT sit = new SIT();
 			SIT sit = new SIT();
 			//SIT sit = new SIT(getSceneOnto());
-			sit.vision(name,r);
-			return true;		
+			List<String> sceneLooked = sit.vision(name,r);
+			return sceneLooked;
 		}
-		return false;	
+		return null;
 	}
 	/*public boolean IsCone(){
 		if(request.getCono() != null){

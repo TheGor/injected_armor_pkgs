@@ -56,10 +56,9 @@ public class ARMORMainService extends AbstractNodeMain {
 		connectedNode.newServiceServer("send_objects", ArmorObjects._TYPE,
 			(request, response) -> {
 				ARMORLinkSit link = new ARMORLinkSit();
-				Boolean are_objects = link.AreObjects(request.getNameObject(),request.getThing());
-				if(are_objects == true){
-					response.setStatus(are_objects);
-				}
+				List<String> are_objects = link.AreObjects(request.getNameObject(),request.getThing());
+				System.out.println("are_objects" + are_objects);
+				response.setSceneName(are_objects);
 			});
 
 

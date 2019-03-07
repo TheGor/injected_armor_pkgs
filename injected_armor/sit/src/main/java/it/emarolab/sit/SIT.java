@@ -28,7 +28,7 @@ public class SIT {
 
 	OWLReferences empty_scene;
 	public static String s;
-	
+	public static int cont = 0;
 
 	public SIT(){
 		empty_scene = (OWLReferences) OWLReferencesInterface.OWLReferencesContainer.getOWLReferences(s);
@@ -36,7 +36,7 @@ public class SIT {
 
 
 
-	public void vision(List<String> list_name,List<ListObjects> list){
+	public List<String> vision(List<String> list_name,List<ListObjects> list){
 		// suppress aMOR log
         	it.emarolab.amor.owlDebugger.Logger.setPrintOnConsole( false);	
 		
@@ -94,7 +94,8 @@ public class SIT {
 		// learn the new scene if is the case
 		if ( recognition1.shouldLearn()) {
 		    System.out.println("Learning.... ");
-		    recognition1.learn("TestScene");
+		    recognition1.learn("TestScene"+cont);
+		    cont++;
 		}
 
 		System.out.println("2 ----------------------------------------------");
@@ -122,6 +123,19 @@ public class SIT {
 		//string ONTO_NAME2= 'ONTO_NEW';
 		//OWLReferences ontoRef2 = OWLReferencesInterface.OWLReferencesContainer.newOWLReferenceFromFileWithPellet(
 					//ONTO_NAME2, ONTO_FILE, ONTO_IRI, bufferinReasoner: true)
+
+		SceneIndividualDescriptor sceneIndividual = recognition1.getSceneDescriptor();
+		Set<SceneClassDescriptor> recognisedNodes = sceneIndividual.buildTypeIndividual();
+		//System.out.println(orderRecognition( recognisedNodes));
+		List<SceneClassDescriptor> sceneRecognized = orderRecognition( recognisedNodes);
+		List<String> nameSceneRecognized = new ArrayList<>();
+		for(int i = 0; i < sceneRecognized.size(); i++){
+			nameSceneRecognized.add(empty_scene.getOWLObjectName(sceneRecognized.get(i).getGroundInstance()));
+
+		}
+
+		System.out.println(nameSceneRecognized);
+
 		Set<OWLClass> classes = empty_scene.getSubClassOf( "Scene");
 		for(OWLClass cl : classes)
 		{
@@ -129,7 +143,7 @@ public class SIT {
 			classDescriptor.readSemantic();
 
 			Set<SceneClassDescriptor> descriptors = classDescriptor.buildSubConcept();
-			if( descriptors.size() <= 1) {
+			if( descriptors.size() <= 1) { // if leaf
 				MORAxioms.Restrictions rest = classDescriptor.getDefinitionConcept();
 				for (SemanticRestriction r : rest) {
 					try {
@@ -146,6 +160,19 @@ public class SIT {
 			}
 		}
 
+		return nameSceneRecognized;
 
+	}
+
+
+	private List<SceneClassDescriptor> orderRecognition( Set< SceneClassDescriptor> recognisedNodes){
+		List<SceneClassDescriptor> cardinality = new ArrayList<>();
+		for ( SceneClassDescriptor n : recognisedNodes){
+			cardinality.add(n);
+			Collections.sort(cardinality,new TestSceneReverseOrder());
+
+		}
+
+		return cardinality;
 	}
 }
