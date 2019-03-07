@@ -33,19 +33,11 @@ class ARMORLinkSit {
 		if(cont > 0) {
 			//SIT sit = new SIT();
 			SIT sit = new SIT();
-			//SIT sit = new SIT(getSceneOnto());
 			List<String> sceneLooked = sit.vision(name,r);
 			return sceneLooked;
 		}
 		return null;
 	}
-	/*public boolean IsCone(){
-		if(request.getCono() != null){
-			return true;		
-		}
-		return false;	
-	}*/
-	
 
 	
 }

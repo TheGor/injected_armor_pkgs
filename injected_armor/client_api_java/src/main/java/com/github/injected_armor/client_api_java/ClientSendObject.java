@@ -16,22 +16,8 @@ import java.util.*;
  * A simple {@link Publisher} {@link NodeMain}.
  */
 
-//a client (third client) that send objects to sit by passing through armor
-  //it uses messages and service defined in armormsgpkg
-  //set all the data
-  //there are a message for a center and axis
-  //then the are messages for objects sphere,plane (that contains center and axis)
-  //and finally a message with both objects (da cambiare)
-  //the service is composed by an arraylist of strings that contains obect's name
-  //and the message that contains two object
 
-  //we need to modify this client
-
-  //################################################################################
-  //################################################################################
-
-  //we modified the service and changed thing of type "listObject" from a simple variable to an array
-  // so we modified this client for using this servicd
+//client that simulate pit
 
 public class ClientSendObject extends AbstractNodeMain {
   @Override
@@ -48,41 +34,9 @@ public class ClientSendObject extends AbstractNodeMain {
       throw new RosRuntimeException(e);
     }
     final ArmorObjectsRequest request = serviceClient.newMessage();
-    //first client
-    /*List<String> object_seen = new ArrayList<String>();
-    object_seen.add("Sphere");
-    object_seen.add("Plane");
-    /*float coord_x = 0.3f;
-    float coord_y = 0.3f;
-    float coord_z = 0.3f;
-    float radius = 0.1f;  */
-    //set the request/size
 
-    //request.setSize(10);
-    /*request.setNameObject(object_seen);
-    request.getThing().getSfera().getCentermsg().setXmsg(0.3);
-    request.getThing().getSfera().getCentermsg().setYmsg(0.3);
-    request.getThing().getSfera().getCentermsg().setZmsg(0.3);
-    request.getThing().getSfera().setRadiusmsg(0.1);
-    request.getThing().getPiano().getCentermsg().setXmsg(0.8);
-    request.getThing().getPiano().getCentermsg().setYmsg(0.8);
-    request.getThing().getPiano().getCentermsg().setZmsg(0.8);
-    request.getThing().getPiano().getAxismsg().setAx(0.5);
-    request.getThing().getPiano().getAxismsg().setAy(0.5);
-    request.getThing().getPiano().getAxismsg().setAz(0.5);
-    request.getThing().getPiano().setHessianmsg(0.6);
-    */
-
-    //client modfied
-    //an arraylist with all objet names., we need to fill it and then pass it to the arraylist of names
-    //defined in the request
     List<String> object_seen = new ArrayList<String>();
-    //now we create a list of injected_Armor msgs, we need it to create different scenes
-    /* nell' arraylist  allobjects voglio avere un array in cui ogni cella ha al proprio
-    interno gli oggetti che voglio aggiungere alla scena. Ogni cella avrà tutti gli oggetti ma poi decido di
-    settarne solo uno. Cosi in ogni cella dell'array ho solo un oggeto.
-    L'array stesso nel totale sarà la scena
-    */
+
     List<injected_armor_msgs.ListObjects> all_objects = new ArrayList<>();
     //every of the following istruction creates a new cell of the list defined above
     //we create 3 different cell for 3 object
@@ -177,11 +131,7 @@ public class ClientSendObject extends AbstractNodeMain {
       @Override
       public void onSuccess(ArmorObjectsResponse response) {
         	connectedNode.getLog().info(String.format("The response is : "));
-		/*connectedNode.getLog().info(response.getCex());
-		connectedNode.getLog().info(response.getCey());
-		connectedNode.getLog().info(response.getCez());
-		connectedNode.getLog().info(response.getRad());*/
-		connectedNode.getLog().info(response.getSceneName());
+        	connectedNode.getLog().info(response.getSceneName());
       }
 
       @Override

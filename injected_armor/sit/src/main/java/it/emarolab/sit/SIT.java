@@ -22,7 +22,7 @@ import java.util.*;
 // sit class
 // the second client starts the sit (you should see "SIT ACTIVE" in your terminal
 //then the third client pass to sit all the object's features
-// it also ececute the reasiing
+// it also execute reasoning and learning
 
 public class SIT {
 
@@ -64,28 +64,14 @@ public class SIT {
 				objects.add( p);			
 			}		
 		}
- 
-		/*Sphere s = new Sphere( empty_scene);
-		s.shouldAddTime( true);
-		s.setCenter( .3f, .3f, .3f);
-		s.setRadius( .1f);
-		objects.add( s);
 
-		Plane p = new Plane( empty_scene);
-		p.shouldAddTime( true);
-		p.setAxis( .5f, .4f, .1f);
-		p.setCenter( .3f, .1f, .1f);
-		p.setHessian( .5f);
-		objects.add( p);*/
 
 		System.out.println( "Object " + objects);
 
 		System.out.println("1 ----------------------------------------------");
 
 		SpatialSimplifier simplifier = new SpatialSimplifier( objects);
-
-		//SceneRepresentation recognition1 = new SceneRepresentation( simplifier, empty_scene);
-        	FullSceneRepresentation recognition1 = new FullSceneRepresentation( simplifier, empty_scene);
+		FullSceneRepresentation recognition1 = new FullSceneRepresentation( simplifier, empty_scene);
 
 		System.out.println( "Recognised with best confidence: " + recognition1.getRecognitionConfidence() + " should learn? " + recognition1.shouldLearn());
 		System.out.println( "Best recognised class: " + recognition1.getBestRecognitionDescriptor());
@@ -106,27 +92,13 @@ public class SIT {
 		System.out.println( "Other recognised classes: " + recognition1.getSceneDescriptor().getTypeIndividual());
 
 		System.out.println("3 ----------------------------------------------");
-
-
-		/*
-        Set<SceneClassDescriptor> recognitionClasses = recognition2.getSceneDescriptor().buildTypeIndividual();
-        for ( SceneClassDescriptor cl1 : recognitionClasses)
-            for ( SceneClassDescriptor cl2 : recognitionClasses)
-                if ( ! cl1.equals( cl2))
-                    System.out.println( " is " + cl1.getInstance().getIRI().getRemainder().get() +
-                            " subclass of " + cl2.getInstance().getIRI().getRemainder().get() +"? " + cl1.getSubConcept().contains( cl2.getInstance()));
-
-		*/
-        System.out.println("6 ----------------------------------------------");
 		System.out.println("Triplets extraction");
 
-		//string ONTO_NAME2= 'ONTO_NEW';
-		//OWLReferences ontoRef2 = OWLReferencesInterface.OWLReferencesContainer.newOWLReferenceFromFileWithPellet(
-					//ONTO_NAME2, ONTO_FILE, ONTO_IRI, bufferinReasoner: true)
+
 
 		SceneIndividualDescriptor sceneIndividual = recognition1.getSceneDescriptor();
 		Set<SceneClassDescriptor> recognisedNodes = sceneIndividual.buildTypeIndividual();
-		//System.out.println(orderRecognition( recognisedNodes));
+
 		List<SceneClassDescriptor> sceneRecognized = orderRecognition( recognisedNodes);
 		List<String> nameSceneRecognized = new ArrayList<>();
 		for(int i = 0; i < sceneRecognized.size(); i++){
