@@ -30,19 +30,15 @@ class Look(smach.State):
 
     def callback(self, data):
   	if data.data == 1:
-	    #print("HO RICEUTO 1")
             self.one_received = True
         elif data.data == 2:
-	    #print("HO RICEUTO 2")
             self.two_received = True
         elif data.data == 3:
-            #print("HO RICEUTO 3")
             self.three_received = True
        
 
     def execute(self,userdata):
 	rospy.loginfo('Executing state LOOK')
-	#rospy.loginfo('flag = %f'%data.data)
 	time.sleep(15)
 	if self.one_received:
 		print("$$$ I am looking configuration 1")
@@ -66,7 +62,7 @@ class Listen(smach.State):
 
     def execute(self,userdata):
 	rospy.loginfo('Executing state LISTEN')
-	self.answer=raw_input("$$$ Do you want to ask something to Me?\n")
+	self.answer=raw_input("$$$ Do you want to ask something to Me?\n"+"**(reply yes or anything else)**\n")
 	if self.answer == 'yes':
 		userdata.list_out = userdata.list_in
 		print('$$$ Ok, i will reply your questions')
@@ -83,12 +79,6 @@ class Processing_response_general(smach.State):
 
     def execute(self,userdata):
 	rospy.loginfo('Executing state PROCESSING_RESPONSE_GENERAL')
-	rospy.loginfo(userdata.processing_response_general_input_2)
-	rospy.loginfo(type(userdata.processing_response_general_input_2))
-	rospy.loginfo(userdata.processing_response_general_input_1)
-	rospy.loginfo(type(userdata.processing_response_general_input_1[0]))
-	rospy.loginfo(len(userdata.processing_response_general_input_1))
-	#if((len(userdata.processing_response_general_input_2)==0) or (len(userdata.processing_response_general_input_1)==0)):
 	if (len(userdata.processing_response_general_input_2)==0 or userdata.processing_response_general_input_1[0]==''):
 		print('$$$ I do not see what you asking me')
 		return 'not_proc'
@@ -108,34 +98,27 @@ class Processing_response_1(smach.State):
 #here we processing the reuslt of the sparql_query
     def execute(self,userdata):
 	rospy.loginfo('Executing state PROCESSING_RESPONSE_1 ')
-	#rospy.loginfo('now u got: %s'%userdata.processing_response_input_1)
-        #rospy.loginfo('name: %s'%userdata.processing_response_input_2)
 	#save the response in a tmp variable
 	tmp=userdata.processing_response_input_1
-	#rospy.loginfo(tmp)
 		
 	#string manipulation
 	for x in tmp:
-		#rospy.loginfo('x iniziale %s ',x)
 		x=x.replace("p=http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit#","")
 		x=x.replace("cls=http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit#","")
 		x=x.replace("{","")
 		x=x.replace("}","")
-		#x=x.replace(",","")
-		#rospy.loginfo('x finale %s ',x)
+
 	#assign manipulated string to a new list
 	tmp1=[]
 	tmp1.append(x)
-	#rospy.loginfo('lista_finale %s ',tmp1)
 	#split tmp1 in different senteces ----> ['PlaneisAboveOf','Sphere',.....] 
 	#i have 6 string in the variable sentences
 	sentences=tmp1[0].split(',')
-	#rospy.loginfo('la mia frase %s ', sentences)
 	#more working, trying to separate Plane/is/Above/Of
 	for k in range(len(sentences)):
 		if k % 2==0:
 			if('Plane' in sentences[k]):
-				sentences[k]=sentences[k].replace('Plane','Plane ')
+				sentences[k]=sentences[k].replace('Plane',' Plane ')
 				if('Behind' in sentences[k]):
 					sentences[k]=sentences[k].replace('Behind',' Behind ')
 				elif('Above' in sentences[k]):
@@ -148,10 +131,15 @@ class Processing_response_1(smach.State):
 					sentences[k]=sentences[k].replace('InFront',' In Front ')
 				elif('Below' in sentences[k]):
 					sentences[k]=sentences[k].replace('Below',' Below ')
-				elif('Along' in sentences[k]):
-					sentences[k]=sentences[k].replace('Along',' Along ')
+				elif('AlongX' in sentences[k]):
+					sentences[k]=sentences[k].replace('AlongXWith',' Along X With ')
+				elif('AlongY' in sentences[k]):
+					sentences[k]=sentences[k].replace('AlongYWith',' Along Y With ')
+				elif('AlongZ' in sentences[k]):
+					sentences[k]=sentences[k].replace('AlongZWith',' Along Z With ')
+	
 			elif('Sphere' in sentences[k]):
-				sentences[k]=sentences[k].replace('Sphere','Sphere ')
+				sentences[k]=sentences[k].replace('Sphere',' Sphere ')
 				if('Behind' in sentences[k]):
 					sentences[k]=sentences[k].replace('Behind',' Behind ')
 				elif('Above' in sentences[k]):
@@ -162,9 +150,13 @@ class Processing_response_1(smach.State):
 					sentences[k]=sentences[k].replace('Left',' Left ')
 				elif('InFront' in sentences[k]):
 					sentences[k]=sentences[k].replace('InFront',' In Front ')
-				elif('Along' in sentences[k]):
-					sentences[k]=sentences[k].replace('Along',' Along ')
-	#rospy.loginfo('la mia frase diventa %s ', sentences)		
+				elif('AlongX' in sentences[k]):
+					sentences[k]=sentences[k].replace('AlongXWith',' Along X With ')
+				elif('AlongY' in sentences[k]):
+					sentences[k]=sentences[k].replace('AlongYWith',' Along Y With ')
+				elif('AlongZ' in sentences[k]):
+					sentences[k]=sentences[k].replace('AlongZWith',' Along Z With ')
+	
 	#try to build the final sentence
 	final_sentences=[]
 	j=0
@@ -182,14 +174,11 @@ class Processing_response_2(smach.State):
         smach.State.__init__(self, outcomes=['got_it'], input_keys=['processing_response_input_1','processing_response_input_2'])
 #here we processing the reuslt of the sparql_query
     def execute(self,userdata):
-	#rospy.loginfo('now u got: %s'%userdata.processing_response_input_1)
-        #rospy.loginfo('name: %s'%userdata.processing_response_input_2)
         rospy.loginfo('Executing state PROCESSING_RESPONSE_2')
 	#save the response in a tmp variable
 	tmp=userdata.processing_response_input_1
 	#string manipulation
 	for x in tmp:
-		#rospy.loginfo('x iniziale %s ',x)
 		x=x.replace("p=http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit#","")
 		x=x.replace("cls=http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit#","")
 		x=x.replace("{","")
@@ -202,83 +191,11 @@ class Processing_response_2(smach.State):
 		x=x.replace("isAlongXWith","")
 		x=x.replace("isAlongYWith","")
 		x=x.replace("isAlongZWith","")
-		#rospy.loginfo('x finale %s ',x)
 	tmp1=[]
 	tmp1.append(x)
 	print('$$$ I see a '+tmp1[0])
 	return 'got_it'
-"""
-class Processing_response_3(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['got_it'], input_keys=['processing_response_input_1','processing_response_input_2'])
-     
-    #here we processing the reuslt of the sparql_query
-    def execute(self,userdata):
-	rospy.loginfo('now u got: %s'%userdata.processing_response_input_1)
-        rospy.loginfo('name: %s'%userdata.processing_response_input_2)
-
-	#save the response in a tmp variable
-	tmp=userdata.processing_response_input_1
-	#string manipulation
-	for x in tmp:
-		rospy.loginfo('x iniziale %s ',x)
-		x=x.replace("p=http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit#","")
-		x=x.replace("cls=http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit#","")
-		x=x.replace("{","")
-		x=x.replace("}","")
-		#x=x.replace(",","")
-		rospy.loginfo('x finale %s ',x)
-	#assign manipulated string to a new list
-	tmp1=[]
-	tmp1.append(x)
-	rospy.loginfo('lista_finale %s ',tmp1)
-	#split tmp1 in different senteces ----> ['PlaneisAboveOf','Sphere',.....] 
-	#i have 6 string in the variable sentences
-	sentences=tmp1[0].split(',')
-	rospy.loginfo('la mia frase %s ', sentences)
-	#more working, trying to separate Plane/is/Above/Of
-	for k in range(len(sentences)):
-		if k % 2==0:
-			if('Plane' in sentences[k]):
-				sentences[k]=sentences[k].replace('Plane','Plane ')
-				if('Behind' in sentences[k]):
-					sentences[k]=sentences[k].replace('Behind',' Behind ')
-				elif('Above' in sentences[k]):
-					sentences[k]=sentences[k].replace('Above',' Above ')
-				elif('Right' in sentences[k]):
-					sentences[k]=sentences[k].replace('Right',' Right ')
-				elif('Left' in sentences[k]):
-					sentences[k]=sentences[k].replace('Left',' Left ')
-				elif('InFront' in sentences[k]):
-					sentences[k]=sentences[k].replace('InFront',' In Front ')
-			elif('Sphere' in sentences[k]):
-				sentences[k]=sentences[k].replace('Sphere','Sphere ')
-				if('Behind' in sentences[k]):
-					sentences[k]=sentences[k].replace('Behind',' Behind ')
-				elif('Above' in sentences[k]):
-					sentences[k]=sentences[k].replace('Above',' Above ')
-				elif('Right' in sentences[k]):
-					sentences[k]=sentences[k].replace('Right',' Right ')
-				elif('Left' in sentences[k]):
-					sentences[k]=sentences[k].replace('Left',' Left ')
-				elif('InFront' in sentences[k]):
-					sentences[k]=sentences[k].replace('InFront',' In Front ')
-	rospy.loginfo('la mia frase diventa %s ', sentences)		
-	#try to build the final sentence
-	final_sentences=[]
-	j=0
-	for i in range(len(sentences)/2):
-		s=sentences[j]+" "+sentences[j+1]
-		final_sentences.append(s)
-		j=j+2
-	for z in final_sentences:
-		rospy.loginfo('%s', z)
-	return 'got_it' 
-"""
-
 	
-
-
 def main():
 	rospy.init_node('state_machine_robot')
 
@@ -439,14 +356,12 @@ def main():
 		#define function for querying a robot
 		def query_request_cb(userdata,request):
 			rospy.loginfo('Executing state QUERY')
-			#rospy.loginfo(userdata.first_scene)
-			#query_request = ArmorDirectiveRequest()
-			#keys_word = ['scene','sphere','plane','above','below','right','left','front','behind']
+			reset=[]
+			request.armor_request.args = reset
 			query_string='PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX owl: <http://www.w3.org/2002/07/owl#> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX sit: <http://www.semanticweb.org/emaroLab/luca-buoncompagni/sit#> SELECT ?p ?cls WHERE { sit:'+userdata.first_scene[0]+' (owl:equivalentClass|(owl:intersectionOf/rdf:rest*/rdf:first))* ?restriction . ?restriction owl:minQualifiedCardinality ?min . '
-			#query_name=[]
 			#question
 			query_name=raw_input('$$$ I am ready to answer your question\n'+'**(insert your question by putting a space beetween each word (question mark included))**\n')
-			#question string manipulation
+			#question string manipulatio
 			list_phrase_keyword = []
 			list_phrase_keyword = query_name.split()
 			list_keyword = []
@@ -458,14 +373,12 @@ def main():
 				elif (x == "above" or x == "below" or x == "right" or x == "left" or x == "front" or x == "behind" or x == "along"):
 					list_keyword.append(x)
 			#if we dont have the predicted keyword
-			if len(list_keyword)==0 :
-				print('michele schifo')
+			print(request)
+			if len(list_keyword)==0:
 				return request
 			#assign list_keyword to userdata for propagating through states 
 			userdata.query_output_1=list_keyword
 			#print all the keywords
-			#for y in sm.userdata.keyword:
-				#rospy.loginfo('%s',y)
 			#if the keyword list contains 'scene' we compose a specific query
 			if list_keyword[0] == "scene":
 				request.armor_request.client_name = "client"
@@ -486,7 +399,7 @@ def main():
 				#rospy.loginfo('%s',request.armor_request.args)
 				return request
 			#if the keyword_list contains a property and an object, we compose a specific query
-			elif (list_keyword[0] == "above" or list_keyword[0] == "below" or list_keyword[0] == "right" or list_keyword[0] == "left" or list_keyword[0] == "front" or list_keyword[0] == "behind" ):
+			elif (list_keyword[0] == "above" or list_keyword[0] == "below" or list_keyword[0] == "right" or list_keyword[0] == "left" or list_keyword[0] == "front" or list_keyword[0] == "behind" or list_keyword[0] == "along"):
 				if (list_keyword[1] == "sphere" or list_keyword[1] == "plane"):
 					request.armor_request.client_name = "client"
 					request.armor_request.reference_name = "reference"
@@ -494,16 +407,12 @@ def main():
 					request.armor_request.primary_command_spec="SPARQL"
 					request.armor_request.secondary_command_spec=""
 					request.armor_request.args=[query_string+' ?restriction owl:onClass ?cls . ?restriction owl:onProperty ?p . FILTER(regex(str(?p),\"'+list_keyword[0]+'\",\"i\") && regex(str(?cls),\"'+list_keyword[1]+'\",\"i\"))}  ']
-				#rospy.loginfo('%s',request.armor_request.args)
-				return request
+					return request
 
 
 				
 		
 		def query_response_cb(userdata,response):
-			#query_response = ArmorDirectiveResponse()
-			#rospy.loginfo('%s', response.armor_response.queried_objects)
-			#rospy.loginfo('%s', sm.userdata.keyword)
 			userdata.query_output=response.armor_response.queried_objects
 			return 'succeeded';
 		
@@ -513,7 +422,6 @@ def main():
 		#create a substate machine which contains the processing of the response
 		
         	sm1 = smach.StateMachine(outcomes=['done'],input_keys=['output','keyword'])
-		#sm1.userdata.output_submachine = ''
 		#define Processing_response state
 		with sm1:
 			#adding state processing general
@@ -525,11 +433,6 @@ def main():
 
 			#adding state processing_repsonse_2 which process response for keyword object (plane or sphere)
 			smach.StateMachine.add('PROCESSING_RESPONSE_2',Processing_response_2(),transitions={'got_it':'done'},remapping={'processing_response_input_1':'output','processing_response_input_2':'keyword'})			
-
-			#adding state processing_repsonse_3 which process response for keyword property and object (right, sphere)
-			#smach.StateMachine.add('PROCESSING_RESPONSE_3',Processing_response_3(),transitions={'got_it':'done'},remapping={'processing_response_input_1':'output','processing_response_input_2':'keyword'})
-
-
 			
 		
 		#first state of the submachine		
@@ -539,29 +442,17 @@ def main():
 		#definition state for clean
 		def clean_ontology_request_cb(userdata,request):
 			rospy.loginfo('Executing state CLEAN_ONTOLOGY')
-			#clean_ontology_request = ArmorDirectiveRequest()
 			request.armor_request.client_name = "client"
 			request.armor_request.reference_name = "reference"
 			request.armor_request.command = "CLEAN"
 			request.armor_request.primary_command_spec = ""
 			request.armor_request.secondary_command_spec = ""
-			#pay attention to the true parameter for adding new individuals
 			request.armor_request.args = ['GeometricPrimitive']
 			return request
 		
 		smach.StateMachine.add('CLEAN_ONTOLOGY',smach_ros.ServiceState('armor_interface_srv',ArmorDirective,request_cb = 									clean_ontology_request_cb),transitions={'succeeded':'LOOK'})
 		
-
-
-
-		
-
-
-	
-
-
-	#result = sm.execute()
-    	#rospy.loginfo(result)    
+ 
 	# Attach a SMACH introspection server
     	sis = smach_ros.IntrospectionServer('smach_usecase_01', sm, '/USE_CASE')
     	sis.start()

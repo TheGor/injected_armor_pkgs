@@ -13,8 +13,7 @@ def talker():
     pub = rospy.Publisher('chatter', Int16, queue_size=10)
     rate = rospy.Rate(10) # 10hz
     #random number from 1 to 3 for three different scenes
-    #random_msg=random.randint(1,3)
-    random_msg = 1
+    random_msg=random.randint(1,3)
     i=0
     while i<5 :
         rospy.loginfo(random_msg)
