@@ -14,7 +14,7 @@ The `injected_armor` package contains three modules:
 - [owloop](https://github.com/EmaroLab/injected_armor_pkgs/tree/master/injected_armor/owloop): is an extension of `amor` that allows to interact with ontology in an Object Oriented Programming manner.
 - [armor](https://github.com/TheGor/injected_armor_pkgs/tree/developingMine/injected_armor/armor): is a ROS service that depends on `amor` and `injected_armor_msgs` for allow ROS clients to manipulate ontologies from other packages.
 - [sit](https://github.com/TheGor/injected_armor_pkgs/tree/developingMine/injected_armor/sit): is a library that implements the Scene Identification and Tagging (SIT) algorithm. It depends on `owloop` (which consequentially depends on `amor`). This library should be used by `armor` in order to inject a new service. 
--[client_api_java](https://github.com/TheGor/injected_armor_pkgs/tree/developingMine/injected_armor/client_api_java): is a client that simulates the sending of scenes
+- [client_api_java](https://github.com/TheGor/injected_armor_pkgs/tree/developingMine/injected_armor/client_api_java): is a client that simulates the sending of scenes
 
 Please check the `README` file and `Doc` folder inside each components of the above lists for more information. 
 All of them have been imported from their original repository, which is linked inside the documentation of each module.
@@ -25,10 +25,10 @@ This repository must be a child of the src folder in your workspace to reach the
 
 # Prerequisites 
 
--Install Ros Kinetic (see http://wiki.ros.org/)
--Install Rosjava (see: http://wiki.ros.org/rosjava)
--Install Smach (see: http://wiki.ros.org/smach)
--Install RosPy (see: http://wiki.ros.org/rospy)
+ - Install Ros Kinetic (see http://wiki.ros.org/)
+ - Install Rosjava (see: http://wiki.ros.org/rosjava)
+ - Install Smach (see: http://wiki.ros.org/smach)
+ - Install RosPy (see: http://wiki.ros.org/rospy)
 
 # How to run
 

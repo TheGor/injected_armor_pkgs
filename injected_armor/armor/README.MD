@@ -160,8 +160,8 @@ The complete list of **commands** and **directives** can be found here:
 
 but there also other commands implemented :
 
-Init Sit : starts the sit by passing the ontology
-Clean    : remove all individuals from ontology
+ - Init Sit 	     : starts the SIT by passing the ontology
+ - Clean Ontology    : remove all individuals from ontology
 
 
 | Effect                          | Command     | 1s spec.       | 2nd spec.      | args[0]      | args[1]       | args[2]        | args[3]        | args[4]    |
