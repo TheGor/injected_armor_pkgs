@@ -16,7 +16,7 @@ import time
 State machine that simulates:
 	Loading of an ontology to amor
 	Init sit
-	Acquistion of a scene by the robot
+	Acquisition of a scene by the robot
 	Dialogue with robot
 """
 

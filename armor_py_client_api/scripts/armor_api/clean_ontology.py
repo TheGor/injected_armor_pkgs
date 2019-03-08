@@ -4,8 +4,9 @@ from armor_client import ArmorClient
 from os.path import dirname, realpath
 
 
-# INITIALIZE REFERENCE
-#this clean the ontology bty removing all individuals
+"""
+this client cleans the ontology by removing all individuals
+"""
 
 client = ArmorClient("client", "reference")
 client.call("CLEAN","","",["GeometricPrimitive"])

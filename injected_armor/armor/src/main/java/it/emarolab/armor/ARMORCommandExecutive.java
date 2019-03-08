@@ -124,7 +124,7 @@ class ARMORCommandExecutive {
         commands.put("LOG_FILE_OFF",             (() -> ARMORCommandUtility.logToFileOff                          (request, response)));
         commands.put("LOG_SCREEN_ON",            (() -> ARMORCommandUtility.logToScreenOn                         (request, response)));
         commands.put("LOG_SCREEN_OFF",           (() -> ARMORCommandUtility.logToScreenOff                        (request, response)));
-        //int command fot init sit
+        //command fot init sit
         commands.put("INIT__",			 (() -> ARMORCommandUtility.initSit			  (request, response)));
 
         /////////////////       QUERY COMMANDS       /////////////////
@@ -140,7 +140,7 @@ class ARMORCommandExecutive {
         commands.put("QUERY_IND_OBJECTPROP",     (() -> ARMORCommandsQuery.queryObjectpropsB2Ind                (request, response, fullIRIName)));
         commands.put("QUERY_SPARQL_",            (() -> ARMORCommandsQuery.querySPARQL                          (request, response, fullIRIName, connectedNode)));
         commands.put("QUERY_SPARQL_FORMATTED",   (() -> ARMORCommandsQuery.querySPARQLFormatted                 (request, response, fullIRIName, connectedNode)));
-        // clean command
+        // command for clean the ontology
         commands.put("CLEAN__",                  (() -> ARMORCommandsQuery.cleanOntology                        (request, response, fullIRIName)));
 
 

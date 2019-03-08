@@ -21,8 +21,7 @@ import java.util.*;
 
 /**
  * SIT CLASS
- * It takes object feature and process and ontology and then
- * starts reasoning and leanring
+ * It takes object feature and then tarts reasoning and leanring
  */
 
 public class SIT {

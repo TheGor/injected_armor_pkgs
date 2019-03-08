@@ -36,7 +36,7 @@ public class ARMORCommandsQuery {
      * @param request : request of armor_interface_srv
      * @param response : response of armor_interface_srv
      * @param fullIRIName : iri of the ontology
-     * @return : retruns armor_interface_srv
+     * @return : retruns armor_interface_srv response
      */
 
     //code for cleanOntology command

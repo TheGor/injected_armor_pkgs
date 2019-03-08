@@ -46,7 +46,7 @@ public class ARMORMainService extends AbstractNodeMain {
 
         //Callback for ArmorObjects.srv
         //it creates linkSit that connects armor to sit, it's a sort of bridge
-        //Linksit set the response for the server
+
 
 	ServiceServer<ArmorObjectsRequest, ArmorObjectsResponse> armorCallbackObject =
 		connectedNode.newServiceServer("send_objects", ArmorObjects._TYPE,

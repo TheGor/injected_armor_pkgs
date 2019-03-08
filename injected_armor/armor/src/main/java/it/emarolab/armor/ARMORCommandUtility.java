@@ -226,7 +226,7 @@ class ARMORCommandUtility {
      * pass the ontology to sit and init it
      * @param request : request of armor_interface_srv
      * @param response :  response of armor_interface_srv
-     * @return : ressponse
+     * @return : ressponse of armor_interface_srv
      */
     static ArmorDirectiveRes initSit(ArmorDirectiveReq request, ArmorDirectiveRes response) {
         //Methods for sending the ontology to sit
@@ -241,7 +241,7 @@ class ARMORCommandUtility {
 		
 		onto_empty.add(element);
 	}
-    //if we find the ontology we pass it to the sit and start the sit
+
         // the name of the ontology is a global vairbale of the class sit
 
 	if(onto_empty.contains(ontoRef)){

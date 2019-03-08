@@ -8,7 +8,7 @@ import it.emarolab.armor.ARMORCommandUtility;
 import java.util.*;
 
 /**
- * This class link ARMOR to SIT
+ * This class links ARMOR to SIT
  *
  */
 
@@ -29,7 +29,7 @@ class ARMORLinkSit {
 	 * there are objects,calls sit
 	 * @param name : list of obects name
 	 * @param r  : list of objects
-	 * @return
+	 * @return : an arraylist of scenes if there are some objecrs otherwise return null
 	 */
 	public List<String> AreObjects(List<String> name,List<ListObjects> r){
 
@@ -40,7 +40,7 @@ class ARMORLinkSit {
 				cont++;
 			}		
 		}
-		//if there are objects it create the sit and start vision simulation
+
 		if(cont > 0) {
 			//SIT sit = new SIT();
 			SIT sit = new SIT();

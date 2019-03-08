@@ -7,7 +7,7 @@ import random
 from random import randint
 
 """
-Publiisher that sends an int number 
+Publisher that sends an int number 
 It is used to simulate pit for the state machine
 """
 

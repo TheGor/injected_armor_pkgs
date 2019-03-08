@@ -4,6 +4,10 @@ import it.emarolab.sit.owloopDescriptor.SceneClassDescriptor;
 
 import java.util.Comparator;
 
+/**
+ *  sort TestScene list by cardinality from greater to smaller
+ */
+
 public class TestSceneReverseOrder implements Comparator<SceneClassDescriptor> {
 
     @Override
