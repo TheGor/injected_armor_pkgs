@@ -167,7 +167,7 @@ Clean    : remove all individuals from ontology
 | Effect                          | Command     | 1s spec.       | 2nd spec.      | args[0]      | args[1]       | args[2]        | args[3]        | args[4]    |
 |---------------------------------|:-----------:|:--------------:|:--------------:|:------------:|:-------------:|:--------------:|:--------------:|:----------:|
 | Init Sit                   |   INIT       | -            | -              | -     | -             | -              | -              | -          |
-| Clean Ontology                  |   CLEAN       |   -          |   -       | -     | -      | -              | -              | "GeometricPrimitve"          |
+| Clean Ontology                  |   CLEAN       |   -          |   -       | -     | "GeometricPrimitve"    | -              | -              |           |
 
 
 

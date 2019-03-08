@@ -30,7 +30,7 @@ This repository must be a child of the src folder in your workspace to reach the
 -Install Smach (see: http://wiki.ros.org/smach)
 -Install RosPy (see: http://wiki.ros.org/rospy)
 
-#How to run
+# How to run
 
 In order to perform the state machine, the following steps are required:
 (It suggested to run every of these commands in different terminal) 
