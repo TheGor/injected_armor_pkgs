@@ -46,7 +46,7 @@ getting rid of annoying warnings.
 
 [clean_ontology](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/armor_py_client_api/scripts/armor_api/clean_ontology.py) is responsible for eliminating all individuals contained in the ontology
 
-[state_machine](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/armor_py_client_api/scripts/armor_api/state_machine.py) shows a complete simulation of the robot behaviour (see report ) 
+[state_machine](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/armor_py_client_api/scripts/armor_api/state_machine.py) shows a complete simulation of the robot behaviour. For detailed information see [Browsing_Robot_Beliefs](https://github.com/TheGor/injected_armor_pkgs/blob/developingMine/Browsing_Robot_Beliefs.pdf) 
 
 # Author
  - [alessio.capitanelli@dibris.unige.it](mailto:alessio.capitanelli@dibris.unige.it).
